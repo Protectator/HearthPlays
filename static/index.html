@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <!--
 	This file is part of HearthPlays.
 
@@ -23,10 +23,61 @@
     Project's repository : https://github.com/Protectator/HearthPlays
     -->
 	<head>
-		<title>HearthPlays</title>
-		<script type="text/javascript" src="../out/app.js"></script>
+        <!-- Meta -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        
+        <!-- Other -->
+        <title>HearthPlays</title>
+        
+        <!-- CSS -->
+        <link rel="stylesheet" type="text/css" href="../lib/bootstrap/dist/css/bootstrap.min.css">
 	</head>
 	<body>
-		
+		<div class="container">
+             <header>
+                <nav class="navbar navbar-dark bg-inverse">
+                    <a class="navbar-brand" href="#">HearthPlays</a>
+                    <ul class="nav navbar-nav">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Viewer</a>
+                        </li>
+                        <li class="nav-item">
+                    </ul>
+                    <form class="form-inline navbar-form pull-right">
+                        <input class="form-control" type="text" placeholder="Search">
+                        <button class="btn btn-success-outline" type="submit">Search</button>
+                    </form>
+                </nav>
+            </header>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <form>
+                            <fieldset class="form-group">
+                                <label for="uploadReplay">Hearthstone Deck Tracker's replay file</label>
+                                <input type="file" class="form-control-file" id="uploadReplay" name="uploadReplay" accept=".hdtreplay">
+                                <small class="text-muted">Replay files are usually found in folder "Users\&lt;you&gt;\AppData\Roaming\HearthstoneDeckTracker\Replays"</small>
+                            </fieldset>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    Test
+                </div>
+                <div class="col-md-9">
+                    Test
+                </div>
+            </div>
+        </div>
+            
+        <!-- Scripts -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script type="text/javascript" src="../lib/bootstrap/dist/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../out/app.js"></script>
 	</body>
 </html>
