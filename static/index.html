@@ -53,10 +53,11 @@
             </header>
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card">
+                    <div class="card card-block">
                         <form>
+                            <h4 class="card-title">Upload a replay</h4>
                             <fieldset class="form-group">
-                                <label for="uploadReplay">Hearthstone Deck Tracker's replay file</label>
+                                <label class="file" for="uploadReplay">Hearthstone Deck Tracker's replay file</label>
                                 <input type="file" class="form-control-file" id="uploadReplay" name="uploadReplay" accept=".hdtreplay">
                                 <small class="text-muted">Replay files are usually found in folder "Users\&lt;you&gt;\AppData\Roaming\HearthstoneDeckTracker\Replays"</small>
                             </fieldset>
@@ -66,11 +67,33 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-3">
-                    Test
-                </div>
-                <div class="col-md-9">
-                    Test
+                <div class="col-md-12">
+                    <div class="card card-block">
+                        <h4 class="card-title">View the replay</h4>
+                        <div class="row">
+                            <div class="col-md-2">
+                                Turns
+                                <div class="list-group">
+                                    <button type="button" class="list-group-item active">Turn 1</button>
+                                    <button type="button" class="list-group-item">Turn 2</button>
+                                    <button type="button" class="list-group-item">Turn 3</button>
+                                    <button type="button" class="list-group-item">Turn 4</button>
+                                    <button type="button" class="list-group-item">Turn 5</button>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                Viewer
+                                <div class="card">
+                                    <div class="card-block" id="viewer-container">
+                                        Viewer is here
+                                    </div>
+                                    <div class="card-block">
+                                        <input type="range" value="2" max="7" min="0" step="1" id="viewer-bar">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
