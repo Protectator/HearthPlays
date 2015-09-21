@@ -105,7 +105,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="row" id="viewer-row">
                         <div class="col-md-2">
                             <div class="card">
                                 <div class="card-header">
@@ -121,14 +121,14 @@
                             </div>
                         </div>
                         <div class="col-md-10">
-                            <div class="card">
-                                <div class="card-header">
+                            <div class="card" id="viewer-card">
+                                <div class="card-header" id="viewer-header">
                                     Viewer
                                 </div>
                                 <div class="card-block" id="viewer-container">
                                     Viewer should be here... Do you have Javascript enabled ?
                                 </div>
-                                <div class="card-block">
+                                <div class="card-block" id="viewer-footer">
                                     <div class="btn-toolbar" role="toolbar" aria-label="Replay buttons toolbar">
                                         <div class="btn-group" role="group" aria-label="Replay buttons group">
                                             <button type="button" class="btn btn-secondary" id="lastTurn">❚❚◄</button>
@@ -137,7 +137,10 @@
                                             <button type="button" class="btn btn-secondary" id="nextAction">►❚</button>
                                             <button type="button" class="btn btn-secondary" id="nextTurn">►❚❚</button>
                                         </div>
-                                        <div class="btn-group" role="group" aria-label="Replay buttons group">
+                                        <div class="btn-group" role="group" aria-label="Replay full screen group">
+                                            <button type="button" class="btn btn-secondary" id="toggleFullscreen">⇲</button>
+                                        </div>
+                                        <div class="btn-group" role="group" aria-label="Replay view bar group">
                                             <input type="range" value="2" max="7" min="0" step="1" id="viewer-bar">
                                         </div>
                                     </div>

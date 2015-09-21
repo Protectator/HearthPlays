@@ -1,3 +1,48 @@
 #viewer-container.active {
 	padding: 0px;
 }
+
+#viewer-card {
+    width: 100%;
+	text-align:center;
+}
+
+#viewer-row {
+    width: 100%;
+	text-align:center;
+}
+
+/* --- To delete if viewer-row won't be fullscreen' --- */
+#viewer-row:fullscreen .col-md-2 {
+    padding-left: 0px;
+	padding-right: 0px;
+}
+
+#viewer-row:fullscreen .col-md-10 {
+    padding-left: 0px;
+	padding-right: 0px;
+}
+
+#viewer-row:-webkit-full-screen .col-md-2 {
+    padding-left: 0px;
+	padding-right: 0px;
+}
+
+#viewer-row:-webkit-full-screen .col-md-10 {
+    padding-left: 0px;
+	padding-right: 0px;
+}
+/* --- */
+
+#viewer-card:fullscreen {
+	margin-top: 7px;
+}
+#viewer-card:-webkit-full-screen {
+	margin-top: 7px;
+}
+#viewer-card:-moz-full-screen {
+	margin-top: 7px;
+}
+#viewer-card:-ms-fullscreen {
+	margin-top: 7px;
+}

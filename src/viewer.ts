@@ -22,6 +22,15 @@
 
 ///<reference path="../lib/pixijs/pixi.js.d.ts"/>
 
+// For Typescript to stop complaining about "moz" and "ms" not existing
+// let's tell him they DO exist.
+interface Document {
+    mozCancelFullScreen: () => void;
+    mozFullScreenElement: () => void;
+    msFullscreenElement: () => void;
+    msExitFullscreen: () => void;
+}
+
 namespace HearthPlays {
     export class Viewer {
 
@@ -36,7 +45,7 @@ namespace HearthPlays {
         private currentRenderer: PIXI.CanvasRenderer | PIXI.WebGLRenderer;
         private rendererView: HTMLCanvasElement;
 
-        constructor() {
+        public constructor() {
             this.length = Viewer.defaultLength;
             this.height = Viewer.defaultHeight;
             this.frameRate = Viewer.defaultFrameRate;
@@ -44,22 +53,54 @@ namespace HearthPlays {
         }
 
         public start(): void {
+            // Abort if already running
             if (this.started) {
                 console.log("HearthPlays viewer has already been started.");
                 return;
             }
+            
+            // Create renderer and append it
             this.currentRenderer = PIXI.autoDetectRenderer(this.length, this.height);
             document.getElementById("viewer-container").appendChild(this.currentRenderer.view);
-            document.getElementById("viewer-container").className = "active";
             this.rendererView = document.getElementById("viewer-container").getElementsByTagName("canvas")[0];
-            this.scaleRenderer();
+            document.getElementById("viewer-container").className = "active";
+            
+            // Firstly, scale the renderer
+            this.scaleRendererOnWidth();
+            
+            //////////////
+            // Bindings //
+            //////////////
+            var _this = this;
+            
+            // Bind handler on window resize
+            window.onresize = this.viewerFullscreenModeHandler.bind(this);
+            // Bind fullscreen toggle on button
+            document.getElementById("toggleFullscreen").addEventListener("click", function() { _this.toggleFullscreen() });
+            // Bind handler when fullscreen changes
+            document.addEventListener("fullscreenchange", function() { _this.viewerFullscreenModeHandler(); });
+            document.addEventListener("webkitfullscreenchange", function() { _this.viewerFullscreenModeHandler(); });
+            document.addEventListener("mozfullscreenchange", function() { _this.viewerFullscreenModeHandler(); });
+            document.addEventListener("MSFullscreenChange", function() { _this.viewerFullscreenModeHandler(); });
         }
 
-        private scaleRenderer() {
-            var targetWidth: number = document.getElementById("viewer-container").offsetWidth;
-            var ratio: number = this.length / this.height;
-            this.rendererView.style.width = targetWidth + "px";
-            this.rendererView.style.height = (targetWidth / ratio) + "px";
+        public toggleFullscreen(): void {
+            if (!this.isFullscreenEnabled()) {
+                this.askFullscreen();
+            } else {
+                this.cancelFullscreen();
+            }
+        }
+
+        private isFullscreenEnabled() {
+            return (document.fullscreenElement ||
+                document.webkitFullscreenElement ||
+                document.mozFullScreenElement ||
+                document.msFullscreenElement) ? true : false;
+        }
+
+        private askFullscreen(): void {
+            this.launchFullscreen(document.getElementById("viewer-row"));
         }
 
         private launchFullscreen(element): void {
@@ -71,6 +112,55 @@ namespace HearthPlays {
                 element.webkitRequestFullscreen();
             } else if (element.msRequestFullscreen) {
                 element.msRequestFullscreen();
+            }
+        }
+
+        private cancelFullscreen(): void {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+
+        private viewerFullscreenModeHandler() {
+            if (!this.isFullscreenEnabled()) {
+                this.scaleRendererOnWidth();
+            } else {
+                this.scaleRendererOnSmallest();
+            }
+        }
+
+        private scaleRendererOnWidth() {
+            var targetWidth: number = document.getElementById("viewer-container").offsetWidth;
+            var ratio: number = this.length / this.height;
+            console.log("Scaling on width : On " + targetWidth + "pixels");
+            this.rendererView.style.width = targetWidth + "px";
+            this.rendererView.style.height = (targetWidth / ratio) + "px";
+        }
+
+        private scaleRendererOnSmallest() {
+            var viewerConainerHeightOverflow = 0; // Small correction, idk how to get past it
+            
+            var targetWidth: number = document.getElementById("viewer-container").offsetWidth;
+            var targetHeight: number = window.innerHeight - document.getElementById("viewer-header").offsetHeight - document.getElementById("viewer-footer").offsetHeight - viewerConainerHeightOverflow;
+            var ratio: number = this.length / this.height;
+            console.log("Scaling on smallest");
+
+            if (targetHeight * ratio < targetWidth) {
+                // Scale based on height
+                console.log("Scaling on HEIGHT : On " + targetHeight + "pixels");
+                this.rendererView.style.height = targetHeight + "px";
+                this.rendererView.style.width = (targetHeight * ratio) + "px";
+            } else {
+                // Scale based on width
+                console.log("Scaling on WIDTH : On " + targetWidth + "pixels");
+                this.rendererView.style.width = targetWidth + "px";
+                this.rendererView.style.height = (targetWidth / ratio) + "px";
             }
         }
     }
