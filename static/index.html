@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <!--
+<!--
 	This file is part of HearthPlays.
 
     HearthPlays - Web Hearthstone replays viewer
@@ -22,58 +22,95 @@
     Contact : me@protectator.ch
     Project's repository : https://github.com/Protectator/HearthPlays
     -->
-	<head>
-        <!-- Meta -->
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        
-        <!-- Other -->
-        <title>HearthPlays</title>
-        
-        <!-- CSS -->
-        <link rel="stylesheet" type="text/css" href="../lib/bootstrap/dist/css/bootstrap.min.css">
-	</head>
-	<body>
-		<div class="container">
-             <header>
-                <nav class="navbar navbar-dark bg-inverse">
-                    <a class="navbar-brand" href="#">HearthPlays</a>
-                    <ul class="nav navbar-nav">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#">Viewer</a>
-                        </li>
-                        <li class="nav-item">
-                    </ul>
-                    <form class="form-inline navbar-form pull-right">
-                        <input class="form-control" type="text" placeholder="Search">
-                        <button class="btn btn-success-outline" type="submit">Search</button>
+
+<head>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <!-- Other -->
+    <title>HearthPlays</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="../lib/bootstrap/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <nav class="navbar navbar-dark bg-inverse">
+                <a class="navbar-brand" href="#">HearthPlays</a>
+                <ul class="nav navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#">Viewer</a>
+                    </li>
+                    <li class="nav-item">
+                </ul>
+                <form class="form-inline navbar-form pull-right">
+                    <input class="form-control" type="text" placeholder="Search">
+                    <button class="btn btn-success-outline" type="submit">Search</button>
+                </form>
+            </nav>
+        </header>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-block">
+                    <form>
+                        <h4 class="card-title">Upload a replay</h4>
+                        <fieldset class="form-group">
+                            <label class="file" for="uploadReplay">Hearthstone Deck Tracker's replay file</label>
+                            <input type="file" class="form-control-file" id="uploadReplay" name="uploadReplay" accept=".hdtreplay">
+                            <small class="text-muted">Replay files are usually found in folder "Users\&lt;you&gt;\AppData\Roaming\HearthstoneDeckTracker\Replays"</small>
+                        </fieldset>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
-                </nav>
-            </header>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card card-block">
-                        <form>
-                            <h4 class="card-title">Upload a replay</h4>
-                            <fieldset class="form-group">
-                                <label class="file" for="uploadReplay">Hearthstone Deck Tracker's replay file</label>
-                                <input type="file" class="form-control-file" id="uploadReplay" name="uploadReplay" accept=".hdtreplay">
-                                <small class="text-muted">Replay files are usually found in folder "Users\&lt;you&gt;\AppData\Roaming\HearthstoneDeckTracker\Replays"</small>
-                            </fieldset>
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                        </form>
-                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card card-block">
-                        <h4 class="card-title">View the replay</h4>
-                        <div class="row">
-                            <div class="col-md-2">
-                                Turns
-                                <div class="list-group">
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-block">
+                    <h4 class="card-title">Watch replay</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <th>Date</th>
+                                        <td>01.01.1990 at 12:00</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Mode</th>
+                                        <td>Arena</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tbody>
+                                    <tr>
+                                        <th>SomeOneElse</th>
+                                        <td>Rank 16</td>
+                                        <td>Hunter</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Protectator</th>
+                                        <td>Rank 17</td>
+                                        <td>Paladin</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <div class="card">
+                                <div class="card-header">
+                                    Turns
+                                </div>
+                                <div class="list-group  list-group-flush">
                                     <button type="button" class="list-group-item active">Turn 1</button>
                                     <button type="button" class="list-group-item">Turn 2</button>
                                     <button type="button" class="list-group-item">Turn 3</button>
@@ -81,14 +118,27 @@
                                     <button type="button" class="list-group-item">Turn 5</button>
                                 </div>
                             </div>
-                            <div class="col-md-9">
-                                Viewer
-                                <div class="card">
-                                    <div class="card-block" id="viewer-container">
-                                        Viewer is here
-                                    </div>
-                                    <div class="card-block">
-                                        <input type="range" value="2" max="7" min="0" step="1" id="viewer-bar">
+                        </div>
+                        <div class="col-md-10">
+                            <div class="card">
+                                <div class="card-header">
+                                    Viewer
+                                </div>
+                                <div class="card-block" id="viewer-container">
+                                    Viewer is here
+                                </div>
+                                <div class="card-block">
+                                    <div class="btn-toolbar" role="toolbar" aria-label="Replay buttons toolbar">
+                                        <div class="btn-group" role="group" aria-label="Replay buttons group">
+                                            <button type="button" class="btn btn-secondary" id="lastTurn">❚❚◄</button>
+                                            <button type="button" class="btn btn-secondary" id="lastAction">❚◄</button>
+                                            <button type="button" class="btn btn-secondary" id="playPause">►</button>
+                                            <button type="button" class="btn btn-secondary" id="nextAction">►❚</button>
+                                            <button type="button" class="btn btn-secondary" id="nextTurn">►❚❚</button>
+                                        </div>
+                                        <div class="btn-group" role="group" aria-label="Replay buttons group">
+                                            <input type="range" value="2" max="7" min="0" step="1" id="viewer-bar">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -97,10 +147,12 @@
                 </div>
             </div>
         </div>
-            
-        <!-- Scripts -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-        <script type="text/javascript" src="../lib/bootstrap/dist/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="../out/app.js"></script>
-	</body>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script type="text/javascript" src="../lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../out/app.js"></script>
+</body>
+
 </html>
