@@ -20,14 +20,18 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
-module HearthPlaysLauncher {
+///<reference path="Viewer.ts"/>
+
+namespace HearthPlays {
     export class Launcher {
         public static launch() {
-            document.getElementsByTagName("body")[0].innerHTML = "It works !";
+            var viewer: Viewer = new Viewer();
+            document.getElementById("viewer-container").innerHTML = "";
+            viewer.start();
         }
     }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    HearthPlaysLauncher.Launcher.launch();
+    HearthPlays.Launcher.launch();
 }, false);
