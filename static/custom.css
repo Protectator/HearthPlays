@@ -1,5 +1,6 @@
 #viewer-container.active {
 	padding: 0px;
+	background-color: black;
 }
 
 #viewer-card {
@@ -13,6 +14,39 @@
 }
 
 /* --- To delete if viewer-row won't be fullscreen' --- */
+/* viewer-row */
+#viewer-row:fullscreen {
+	background-color: black;
+}
+
+#viewer-row:-moz-full-screen {
+	background-color: black;
+}
+
+#viewer-row:-webkit-full-screen {
+	background-color: black;
+}
+
+#viewer-row:-ms-fullscreen {
+	background-color: black;
+}
+/* card-block */
+#viewer-row:fullscreen .card-block {
+	background-color: dimgray;
+}
+
+#viewer-row:-moz-full-screen .card-block {
+	background-color: dimgray;
+}
+
+#viewer-row:-webkit-full-screen .card-block {
+	background-color: dimgray;
+}
+
+#viewer-row:-ms-fullscreen .card-block {
+	background-color: dimgray;
+}
+/* col-md */
 #viewer-row:fullscreen .col-md-2 {
     padding-left: 0px;
 	padding-right: 0px;
@@ -32,6 +66,47 @@
     padding-left: 0px;
 	padding-right: 0px;
 }
+/* buttons */
+#viewer-row:fullscreen .btn-secondary {
+	background-color: dimgray;
+	color: white;
+}
+
+#viewer-row:-moz-full-screen .btn-secondary {
+	background-color: dimgray;
+	color: white;
+}
+
+#viewer-row:-webkit-full-screen .btn-secondary {
+	background-color: dimgray;
+	color: white;
+}
+
+#viewer-row:-ms-fullscreen .btn-secondary {
+	background-color: dimgray;
+	color: white;
+}
+/* list-group-items */
+#viewer-row:fullscreen .list-group-item:not(.active) {
+	background-color: dimgray;
+	color: white;
+}
+
+#viewer-row:-moz-full-screen .list-group-item:not(.active) {
+	background-color: dimgray;
+	color: white;
+}
+
+#viewer-row:-webkit-full-screen .list-group-item:not(.active) {
+	background-color: dimgray;
+	color: white;
+}
+
+#viewer-row:-ms-fullscreen .list-group-item:not(.active) {
+	background-color: dimgray;
+	color: white;
+}
+
 /* --- */
 
 #viewer-card:fullscreen {

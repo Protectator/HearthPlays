@@ -133,6 +133,15 @@ namespace HearthPlays {
             } else {
                 this.scaleRendererOnSmallest();
             }
+            this.updateFullscreenButton();
+        }
+        
+        private updateFullscreenButton() {
+            if (!this.isFullscreenEnabled()) {
+                document.getElementById("toggleFullscreen").innerHTML="⇱";
+            } else {
+                document.getElementById("toggleFullscreen").innerHTML="⇲";
+            }
         }
 
         private scaleRendererOnWidth() {
@@ -143,11 +152,9 @@ namespace HearthPlays {
             this.rendererView.style.height = (targetWidth / ratio) + "px";
         }
 
-        private scaleRendererOnSmallest() {
-            var viewerConainerHeightOverflow = 0; // Small correction, idk how to get past it
-            
+        private scaleRendererOnSmallest() {           
             var targetWidth: number = document.getElementById("viewer-container").offsetWidth;
-            var targetHeight: number = window.innerHeight - document.getElementById("viewer-header").offsetHeight - document.getElementById("viewer-footer").offsetHeight - viewerConainerHeightOverflow;
+            var targetHeight: number = window.innerHeight - document.getElementById("viewer-header").offsetHeight - document.getElementById("viewer-footer").offsetHeight;
             var ratio: number = this.length / this.height;
             console.log("Scaling on smallest");
 
