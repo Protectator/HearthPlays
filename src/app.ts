@@ -27,7 +27,31 @@ namespace HearthPlays {
         public static launch() {
             var viewer: Viewer = new Viewer();
             document.getElementById("viewer-container").innerHTML = "";
-            viewer.start();
+            viewer.launch();
+            // Binds to viewer
+            document.getElementById("toggleFullscreen").addEventListener("click", function() {
+                viewer.toggleFullscreen();
+            });
+            document.getElementById("previousTurn").addEventListener("click", function() {
+                viewer.toggleFullscreen();
+            });
+            document.getElementById("previousAction").addEventListener("click", function() {
+                viewer.previousAction();
+            });
+            document.getElementById("playPause").addEventListener("click", function() {
+                viewer.playPause();
+            });
+            document.getElementById("nextAction").addEventListener("click", function() {
+                viewer.nextAction();
+            });
+            document.getElementById("nextTurn").addEventListener("click", function() {
+                viewer.nextTurn();
+            });
+            // Binds to input
+            viewer.fileInput = <HTMLInputElement>document.getElementById("uploadReplay");
+            document.getElementById("submitReplay").addEventListener("click", function() {
+                viewer.loadFromFileInput();
+            });
         }
     }
 }

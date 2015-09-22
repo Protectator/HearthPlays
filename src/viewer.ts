@@ -41,23 +41,25 @@ namespace HearthPlays {
         private length: number;
         private height: number;
         private frameRate: number;
-        private started: boolean;
+        private launched: boolean;
         private currentRenderer: PIXI.CanvasRenderer | PIXI.WebGLRenderer;
         private rendererView: HTMLCanvasElement;
+        public fileInput: HTMLInputElement;
 
         public constructor() {
             this.length = Viewer.defaultLength;
             this.height = Viewer.defaultHeight;
             this.frameRate = Viewer.defaultFrameRate;
-            this.started = false;
+            this.launched = false;
         }
 
-        public start(): void {
+        public launch(): void {
             // Abort if already running
-            if (this.started) {
+            if (this.launched) {
                 console.log("HearthPlays viewer has already been started.");
                 return;
             }
+            this.launched = true;
             
             // Create renderer and append it
             this.currentRenderer = PIXI.autoDetectRenderer(this.length, this.height);
@@ -73,10 +75,9 @@ namespace HearthPlays {
             //////////////
             var _this = this;
             
+            // --- Fullscreen ---
             // Bind handler on window resize
             window.onresize = this.viewerFullscreenModeHandler.bind(this);
-            // Bind fullscreen toggle on button
-            document.getElementById("toggleFullscreen").addEventListener("click", function() { _this.toggleFullscreen() });
             // Bind handler when fullscreen changes
             document.addEventListener("fullscreenchange", function() { _this.viewerFullscreenModeHandler(); });
             document.addEventListener("webkitfullscreenchange", function() { _this.viewerFullscreenModeHandler(); });
@@ -91,8 +92,32 @@ namespace HearthPlays {
                 this.cancelFullscreen();
             }
         }
+        
+        public previousTurn(): void {
+            // TODO
+        }
+        
+        public previousAction(): void {
+            // TODO
+        }
+        
+        public playPause(): void {
+            // TODO
+        }
+        
+        public nextAction(): void {
+            // TODO
+        }
+        
+        public nextTurn(): void {
+            // TODO
+        }
+        
+        public loadFromFileInput(): void {
+            // TODO
+        }
 
-        private isFullscreenEnabled() {
+        private isFullscreenEnabled(): boolean {
             return (document.fullscreenElement ||
                 document.webkitFullscreenElement ||
                 document.mozFullScreenElement ||
@@ -127,7 +152,7 @@ namespace HearthPlays {
             }
         }
 
-        private viewerFullscreenModeHandler() {
+        private viewerFullscreenModeHandler(): void {
             if (!this.isFullscreenEnabled()) {
                 this.scaleRendererOnWidth();
             } else {
@@ -136,7 +161,7 @@ namespace HearthPlays {
             this.updateFullscreenButton();
         }
         
-        private updateFullscreenButton() {
+        private updateFullscreenButton(): void {
             if (!this.isFullscreenEnabled()) {
                 document.getElementById("toggleFullscreen").innerHTML="⇱";
             } else {
@@ -144,7 +169,7 @@ namespace HearthPlays {
             }
         }
 
-        private scaleRendererOnWidth() {
+        private scaleRendererOnWidth(): void {
             var targetWidth: number = document.getElementById("viewer-container").offsetWidth;
             var ratio: number = this.length / this.height;
             console.log("Scaling on width : On " + targetWidth + "pixels");
@@ -152,7 +177,7 @@ namespace HearthPlays {
             this.rendererView.style.height = (targetWidth / ratio) + "px";
         }
 
-        private scaleRendererOnSmallest() {           
+        private scaleRendererOnSmallest(): void {           
             var targetWidth: number = document.getElementById("viewer-container").offsetWidth;
             var targetHeight: number = window.innerHeight - document.getElementById("viewer-header").offsetHeight - document.getElementById("viewer-footer").offsetHeight;
             var ratio: number = this.length / this.height;
