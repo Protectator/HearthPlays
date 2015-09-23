@@ -25,8 +25,48 @@
 namespace HearthPlays {
     export class ReplayParser {
         public static parse(logs: string): Replay {
-            // TODO EVERYTHING
+            var content: string[] = logs.split("\n");
+            var lines: LogLine[] = new Array<LogLine>();
+            for (var i in content) {
+                lines[i] = new LogLine(content[i]);
+            }
+            console.log(lines);
             return null;
+        }
+    }
+    
+    class LogLine {
+        /** Useful content of the line i.e. Everything after "GameState.SomeThing() - ". Might containt useless leading spaces */
+        private content: string;
+        public type: string;
+        public args: string;
+        /** Level of indentation of the line. Usually corresponds to the nesting level of the line */
+        public indentation: number;
+        /** Actual useful content of the line */
+        public data: string;
+        /** Should be true. If not, it might be the last line of the file, and 'last' should be true. */
+        public valid: boolean = false;
+        /** True if it is detected as the last line. */
+        public last: boolean = false;
+        
+        constructor(line: string) {
+            // Might throw an error if the last line is empty
+            try {
+                this.content = line.split("() - ")[1];
+                var temp = this.content.split("    ");
+            } catch(e) {
+                // This might be the last line
+                if (e instanceof TypeError && this.content == undefined) {
+                    // If it is, mark it as the last
+                    this.last = true;
+                    return;
+                }
+                // Else, this ain't normal : Throw the error.
+                throw e;
+            }
+            this.indentation = temp.length-1;
+            this.data = temp[this.indentation];
+            this.valid = true;
         }
     }
 }

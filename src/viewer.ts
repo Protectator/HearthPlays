@@ -119,17 +119,23 @@ namespace HearthPlays {
         }
 
         public loadFromFileInput(event): void {
-            console.log(event);
             var file: File = event.target.files[0];
             var reader: FileReader = new FileReader();
             var _this = this;
-            
-            reader.onload = (function(theFile){
-                return function(e){
+
+            reader.onload = (function(theFile) {
+                return function(e) {
                     _this.loadReplay(e.target.result);
                 }
             })(file);
-            
+
+            reader.onprogress = function(data) {
+                if (data.lengthComputable) {
+                    var progress = parseInt(((data.loaded / data.total) * 100) + "", 10);
+                    console.log("Loading file progress : " + progress + "%");
+                }
+            }
+
             reader.readAsArrayBuffer(file);
         }
 
@@ -137,7 +143,6 @@ namespace HearthPlays {
             var zip: JSZip = new JSZip(rawData);
             var logs: string = zip.file("output_log.txt").asText();
             this.loadedReplay = ReplayParser.parse(logs);
-            console.log(this.loadedReplay);
         }
 
         private isFullscreenEnabled(): boolean {
