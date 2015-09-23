@@ -21,6 +21,9 @@
 */
 
 ///<reference path="../lib/pixijs/pixi.js.d.ts"/>
+///<reference path="../lib/jszip/jszip.d.ts"/>
+///<reference path="replayParser.ts"/>
+///<reference path="replay.ts"/>
 
 // For Typescript to stop complaining about "moz" and "ms" not existing
 // let's tell him they DO exist.
@@ -44,7 +47,9 @@ namespace HearthPlays {
         private launched: boolean;
         private currentRenderer: PIXI.CanvasRenderer | PIXI.WebGLRenderer;
         private rendererView: HTMLCanvasElement;
+        private loadedReplay: Replay;
         public fileInput: HTMLInputElement;
+        private replayData: JSON;
 
         public constructor() {
             this.length = Viewer.defaultLength;
@@ -92,29 +97,47 @@ namespace HearthPlays {
                 this.cancelFullscreen();
             }
         }
-        
+
         public previousTurn(): void {
             // TODO
         }
-        
+
         public previousAction(): void {
             // TODO
         }
-        
+
         public playPause(): void {
             // TODO
         }
-        
+
         public nextAction(): void {
             // TODO
         }
-        
+
         public nextTurn(): void {
             // TODO
         }
-        
-        public loadFromFileInput(): void {
-            // TODO
+
+        public loadFromFileInput(event): void {
+            console.log(event);
+            var file: File = event.target.files[0];
+            var reader: FileReader = new FileReader();
+            var _this = this;
+            
+            reader.onload = (function(theFile){
+                return function(e){
+                    _this.loadReplay(e.target.result);
+                }
+            })(file);
+            
+            reader.readAsArrayBuffer(file);
+        }
+
+        private loadReplay(rawData: ArrayBuffer): void {
+            var zip: JSZip = new JSZip(rawData);
+            var logs: string = zip.file("output_log.txt").asText();
+            this.loadedReplay = ReplayParser.parse(logs);
+            console.log(this.loadedReplay);
         }
 
         private isFullscreenEnabled(): boolean {
@@ -160,12 +183,12 @@ namespace HearthPlays {
             }
             this.updateFullscreenButton();
         }
-        
+
         private updateFullscreenButton(): void {
             if (!this.isFullscreenEnabled()) {
-                document.getElementById("toggleFullscreen").innerHTML="⇱";
+                document.getElementById("toggleFullscreen").innerHTML = "⇱";
             } else {
-                document.getElementById("toggleFullscreen").innerHTML="⇲";
+                document.getElementById("toggleFullscreen").innerHTML = "⇲";
             }
         }
 
@@ -177,7 +200,7 @@ namespace HearthPlays {
             this.rendererView.style.height = (targetWidth / ratio) + "px";
         }
 
-        private scaleRendererOnSmallest(): void {           
+        private scaleRendererOnSmallest(): void {
             var targetWidth: number = document.getElementById("viewer-container").offsetWidth;
             var targetHeight: number = window.innerHeight - document.getElementById("viewer-header").offsetHeight - document.getElementById("viewer-footer").offsetHeight;
             var ratio: number = this.length / this.height;

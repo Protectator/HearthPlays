@@ -49,9 +49,10 @@ namespace HearthPlays {
             });
             // Binds to input
             viewer.fileInput = <HTMLInputElement>document.getElementById("uploadReplay");
-            document.getElementById("submitReplay").addEventListener("click", function() {
-                viewer.loadFromFileInput();
-            });
+            // Binds to file
+            document.getElementById('uploadReplay').addEventListener('change', function(event: Event) {
+                viewer.loadFromFileInput(event);
+            }, false);
         }
     }
 }
