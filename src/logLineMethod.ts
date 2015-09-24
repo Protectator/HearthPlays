@@ -20,20 +20,13 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
-///<reference path="replay.ts"/>
-///<reference path="logLine.ts"/>
-
 namespace HearthPlays {
-    export class ReplayParser {
-        public static parse(logs: string): Replay {
-            var content: string[] = logs.split("\n");
-            var lines: LogLine[] = new Array<LogLine>();
-            for (var i in content) {
-                lines[i] = new LogLine(content[i]);
-            }
-            console.log(lines);
-            return null;
-        }
-    }
-    
+	export enum LogLineMethod {
+		DEBUG_PRINT_POWER,
+        DEBUG_PRINT_POWER_LIST,
+        DEBUG_PRINT_CHOICES,
+        SEND_CHOICES,
+        DEBUG_PRINT_OPTIONS,
+        SEND_OPTION
+	}
 }
