@@ -142,7 +142,8 @@ namespace HearthPlays {
         private loadReplay(rawData: ArrayBuffer): void {
             var zip: JSZip = new JSZip(rawData);
             var logs: string = zip.file("output_log.txt").asText();
-            this.loadedReplay = ReplayParser.parse(logs);
+            var parser = new ReplayParser();
+            this.loadedReplay = parser.parse(logs);
         }
 
         private isFullscreenEnabled(): boolean {

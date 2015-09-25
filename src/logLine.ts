@@ -28,7 +28,6 @@ namespace HearthPlays {
 	export class LogLine {
 		/** Useful content of the line i.e. Everything after "GameState.SomeThing() - ". Might containt useless leading spaces */
 		private content: string;
-		public args: string;
 		/** Level of indentation of the line. Usually corresponds to the nesting level of the line */
 		public indentation: number;
 		/** Actual useful content of the line */

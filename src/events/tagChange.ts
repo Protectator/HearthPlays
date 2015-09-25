@@ -20,14 +20,12 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
+///<reference path="../replayEvent.ts"/>
+
 namespace HearthPlays {
-    export class Replay {
-        private timeline: Event
-        
+	export class TagChange implements ReplayEvent {
         constructor() {
-            // TODO EVERYTHING
+            // TODO
         }
-        
-        // TODO LOTS OF THINGS
     }
 }

@@ -20,14 +20,10 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
+///<reference path="../entity.ts"/>
+
 namespace HearthPlays {
-    export class Replay {
-        private timeline: Event
+	export class GameEntity extends Entity {
         
-        constructor() {
-            // TODO EVERYTHING
-        }
-        
-        // TODO LOTS OF THINGS
     }
 }

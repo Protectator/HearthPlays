@@ -1,3 +1,4 @@
+
 /*	This file is part of HearthPlays.
 
     HearthPlays - Web Hearthstone replays viewer
@@ -20,14 +21,18 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
+///<reference path="../replayEvent.ts"/>
+///<reference path="../entities/gameEntity.ts"/>
+///<reference path="../entities/player.ts"/>
+
 namespace HearthPlays {
-    export class Replay {
-        private timeline: Event
+	export class CreateGame implements ReplayEvent {
+        
+        private gameEntity: GameEntity;
+        private players: Player[];
         
         constructor() {
-            // TODO EVERYTHING
+            // TODO
         }
-        
-        // TODO LOTS OF THINGS
     }
 }

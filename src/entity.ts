@@ -21,13 +21,15 @@
 */
 
 namespace HearthPlays {
-    export class Replay {
-        private timeline: Event
+	export class Entity {
+        private tags: {[tag: string]: number};
         
-        constructor() {
-            // TODO EVERYTHING
+        public getTag(tagName: string): number {
+            return this.tags[tagName];
         }
         
-        // TODO LOTS OF THINGS
-    }
+        public setTag(tagName: string, value: number): void {
+            this.tags[tagName] = value;
+        }
+	}
 }

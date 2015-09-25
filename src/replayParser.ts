@@ -22,18 +22,149 @@
 
 ///<reference path="replay.ts"/>
 ///<reference path="logLine.ts"/>
+///<reference path="logLineType.ts"/>
+///<reference path="logLineMethod.ts"/>
+///<reference path="replayEvent.ts"/>
+///<reference path="events/createGame.ts"/>
+///<reference path="events/fullEntity.ts"/>
+///<reference path="events/action.ts"/>
+///<reference path="events/showEntity.ts"/>
+///<reference path="events/hideEntity.ts"/>
+///<reference path="events/tagChange.ts"/>
 
 namespace HearthPlays {
     export class ReplayParser {
-        public static parse(logs: string): Replay {
+        
+        // Parser data
+        private lines: LogLine[];
+        private events: ReplayEvent[];
+        
+        // Parser state
+        private currentLine: number;
+        private expectedPP: number;
+
+        public parse(logs: string): Replay {
             var content: string[] = logs.split("\n");
-            var lines: LogLine[] = new Array<LogLine>();
+            this.lines = new Array<LogLine>();
+            this.events = new Array<ReplayEvent>();
             for (var i in content) {
-                lines[i] = new LogLine(content[i]);
+                this.lines[i] = new LogLine(content[i]);
             }
-            console.log(lines);
+            this.currentLine = 0;
+            console.log(this.lines);
+            while (this.currentLine < this.lines.length) {
+                this.parseFirstLevelLine();
+            }
             return null;
         }
+
+        private parseFirstLevelLine(): void {
+            var line = this.lines[this.currentLine];
+
+            switch (line.method) {
+                case LogLineMethod.DEBUG_PRINT_POWER:
+                    switch (line.type) {
+                        case LogLineType.CREATE_GAME:
+                            this.parseCreateGame();
+                            break;
+                        case LogLineType.FULL_ENTITY:
+                            this.parseFullEntity();
+                            break;
+                        case LogLineType.ACTION_START:
+                            this.parseAction();
+                            break;
+                        case LogLineType.ACTION_END:
+                            throw new Error("Misplaced ACTION_END");
+                            break;
+                        case LogLineType.TAG_CHANGE:
+                            this.parseTagChange();
+                            break;
+                        case LogLineType.SHOW_ENTITY:
+                            this.parseShowEntity();
+                            break;
+                        case LogLineType.HIDE_ENTITY:
+                            this.parseHideEntity();
+                            break;
+                        case LogLineType.META_DATA:
+                            throw new Error("Misplaced META_DATA");
+                            break;
+                        case LogLineType.meta:
+                            throw new Error("Misplaced block information");
+                            break;
+                        default:
+                            throw new Error("Unrecognized event");
+                    }
+                    break;
+
+                case LogLineMethod.DEBUG_PRINT_POWER_LIST:
+                    this.parsePrintPowerList();
+                    break;
+
+                case LogLineMethod.DEBUG_PRINT_CHOICES:
+                    // TODO
+                    break;
+
+                case LogLineMethod.SEND_CHOICES:
+                    // TODO
+                    break;
+
+                case LogLineMethod.DEBUG_PRINT_OPTIONS:
+                    // TODO
+                    break;
+
+                case LogLineMethod.SEND_OPTION:
+                    // TODO
+                    break;
+
+                default:
+                    throw new Error("Unknown method name");
+            }
+        }
+        
+        private parseCreateGame(): void {
+            var line = this.lines[this.currentLine];
+            var event = new CreateGame();
+            // TODO Add tags etc
+        }
+        
+        private parseFullEntity(): void {
+            var line = this.lines[this.currentLine];
+            var event = new FullEntity();
+            // TODO
+        }
+        
+        private parseAction(): void {
+            var line = this.lines[this.currentLine];
+            var event = new Action();
+            // TODO
+        }
+        
+        private parseTagChange(): void {
+            var line = this.lines[this.currentLine];
+            var event = new TagChange();
+            // TODO
+        }
+        
+        private parseShowEntity(): void {
+            var line = this.lines[this.currentLine];
+            var event = new ShowEntity();
+            // TODO
+        }
+        
+        private parseHideEntity(): void {
+            var line = this.lines[this.currentLine];
+            var event = new HideEntity();
+            // TODO
+        }
+
+        private parsePrintPowerList(): void {
+            var line = this.lines[this.currentLine]; // TODO Make a getter for current line
+            if (line.type == LogLineType.meta) {
+                this.expectedPP = parseInt(line.print.split("Count=")[1]);
+            } else {
+                throw new Error("Malformed DebugPrintPowerList()");
+            }
+        }
     }
-    
+
 }

@@ -21,13 +21,7 @@
 */
 
 namespace HearthPlays {
-    export class Replay {
-        private timeline: Event
+	export interface ReplayEvent {
         
-        constructor() {
-            // TODO EVERYTHING
-        }
-        
-        // TODO LOTS OF THINGS
-    }
+	}
 }
