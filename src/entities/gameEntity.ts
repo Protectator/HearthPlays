@@ -24,6 +24,11 @@
 
 namespace HearthPlays {
 	export class GameEntity extends Entity {
+        public entityID: number;
         
+        constructor(entityId: number) {
+            super();
+            this.entityID = entityId;
+        }
     }
 }

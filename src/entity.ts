@@ -22,13 +22,13 @@
 
 namespace HearthPlays {
 	export class Entity {
-        private tags: {[tag: string]: number};
+        private tags: {[tag: string]: string};
         
-        public getTag(tagName: string): number {
+        public getTag(tagName: string): string {
             return this.tags[tagName];
         }
         
-        public setTag(tagName: string, value: number): void {
+        public setTag(tagName: string, value: string): void {
             this.tags[tagName] = value;
         }
 	}

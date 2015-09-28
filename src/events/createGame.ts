@@ -28,8 +28,8 @@
 namespace HearthPlays {
 	export class CreateGame implements ReplayEvent {
         
-        private gameEntity: GameEntity;
-        private players: Player[];
+        public gameEntity: GameEntity;
+        public players: Player[];
         
         constructor() {
             // TODO

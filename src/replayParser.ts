@@ -24,6 +24,7 @@
 ///<reference path="logLine.ts"/>
 ///<reference path="logLineType.ts"/>
 ///<reference path="logLineMethod.ts"/>
+///<reference path="entities/tags.ts"/>
 ///<reference path="replayEvent.ts"/>
 ///<reference path="events/createGame.ts"/>
 ///<reference path="events/fullEntity.ts"/>
@@ -40,7 +41,12 @@ namespace HearthPlays {
         private events: ReplayEvent[];
         
         // Parser state
-        private currentLine: number;
+        private currentLineNumber: number;
+        
+        private get currentLine(): LogLine {
+            return this.lines[this.currentLineNumber];
+        }
+        
         private expectedPP: number;
 
         public parse(logs: string): Replay {
@@ -50,16 +56,16 @@ namespace HearthPlays {
             for (var i in content) {
                 this.lines[i] = new LogLine(content[i]);
             }
-            this.currentLine = 0;
+            this.currentLineNumber = -1;
             console.log(this.lines);
-            while (this.currentLine < this.lines.length) {
+            while (this.currentLineNumber < this.lines.length) {
                 this.parseFirstLevelLine();
             }
             return null;
         }
 
         private parseFirstLevelLine(): void {
-            var line = this.lines[this.currentLine];
+            var line = this.nextLine();
 
             switch (line.method) {
                 case LogLineMethod.DEBUG_PRINT_POWER:
@@ -122,48 +128,110 @@ namespace HearthPlays {
         }
         
         private parseCreateGame(): void {
-            var line = this.lines[this.currentLine];
-            var event = new CreateGame();
-            // TODO Add tags etc
+            // Creating the event we'll return
+            var event: CreateGame = new CreateGame();
+            // Checking if we're on the correct line
+            if (this.currentLine.type != LogLineType.CREATE_GAME) {
+                throw new Error("Tried to parse wrong event");
+            }
+            var line = this.nextLine();
+            // Adding all meta information
+            while (line.type == LogLineType.meta) {
+                var words = line.print.split(" ");
+                
+                // Parsing the "GameEntity" part
+                if (words[0] == "GameEntity") {
+                    var entityIdWords = words[1].split("=");
+                    // Getting the EntityID of the line
+                    if (entityIdWords[0] == "EntityID") {
+                        event.gameEntity.entityID = parseInt(entityIdWords[1]);
+                    }
+                    var parentIndentation = line.indentation;
+                    line = this.nextLine();
+                    
+                    // Getting all tag values in it
+                    var currentTag: Tag;
+                    while (line.indentation > parentIndentation) {
+                        currentTag = this.readTag();
+                        event.gameEntity.setTag(currentTag.key, currentTag.value);
+                        line = this.nextLine();
+                    }
+                } else if (words[0] == "Player") {
+                    console.log(event); // TODO : See if GameEntity works
+                    // TODO
+                }
+                
+
+            }
+        }
+        
+        /**
+         * Used to extract the tag name and value of a tag line
+         * Current line must be a tag one
+         */
+        private readTag(): Tag {
+            var words = this.currentLine.print.split(" ");
+            var parts;
+            var key, value: string;
+            for (var word in words) {
+                parts = word.split("="); 
+                if (parts[0] == "tag") {
+                    key = parts[1];
+                } else if (parts[0] == "value") {
+                    value = parts[1];
+                } else {
+                    throw new Error("Unknown tag parameter");
+                }
+            }
+            return new Tag(key, value);
+        }
+        
+        private readAssignations(line: string) {
+            // TODO
         }
         
         private parseFullEntity(): void {
-            var line = this.lines[this.currentLine];
+
             var event = new FullEntity();
             // TODO
         }
         
         private parseAction(): void {
-            var line = this.lines[this.currentLine];
+
             var event = new Action();
             // TODO
         }
         
         private parseTagChange(): void {
-            var line = this.lines[this.currentLine];
+
             var event = new TagChange();
             // TODO
         }
         
         private parseShowEntity(): void {
-            var line = this.lines[this.currentLine];
+
             var event = new ShowEntity();
             // TODO
         }
         
         private parseHideEntity(): void {
-            var line = this.lines[this.currentLine];
+
             var event = new HideEntity();
             // TODO
         }
 
         private parsePrintPowerList(): void {
-            var line = this.lines[this.currentLine]; // TODO Make a getter for current line
-            if (line.type == LogLineType.meta) {
-                this.expectedPP = parseInt(line.print.split("Count=")[1]);
+            if (this.currentLine.type == LogLineType.meta) {
+                this.expectedPP = parseInt(this.currentLine.print.split("Count=")[1]);
             } else {
                 throw new Error("Malformed DebugPrintPowerList()");
             }
+            this.nextLine();
+        }
+        
+        private nextLine(): LogLine {
+            this.currentLineNumber++;
+            return this.currentLine;
         }
     }
 
