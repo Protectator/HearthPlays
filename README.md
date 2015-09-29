@@ -1,5 +1,4 @@
 # HearthPlays [![Build Status](https://magnum.travis-ci.com/Protectator/HearthPlays.svg?token=sQpTnAk4qPzgpu27YfLd&branch=master)](https://magnum.travis-ci.com/Protectator/HearthPlays)
-===========
 
 HearthPlays is a website that allows you to watch replays of Hearthstone games.
 
