@@ -1,0 +1,19 @@
+{
+  "name": "HearthPlays",
+  "version": "0.1.0-alpha",
+  "private": true,
+  "description": "HearthPlays is a website that allows you to watch replays of Hearthstone games.",
+  "author": "Kewin Dousse (Protectator) <me@protectator.ch>",
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-typescript": "^2.9.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/protectator/HearthPlays.git",
+    "private": true
+  }
+}

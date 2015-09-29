@@ -58,5 +58,7 @@ namespace HearthPlays {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    HearthPlays.Launcher.launch();
+    if (document.getElementById("autoLaunch")) {
+        HearthPlays.Launcher.launch();
+    }
 }, false);
