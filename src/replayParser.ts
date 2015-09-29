@@ -186,8 +186,39 @@ namespace HearthPlays {
             return new Tag(key, value);
         }
         
+        /**
+         * Used to read a line containing assignations like "HEALTH=3 SOMETHING=[hi=2 low=4]"
+         */
         private readAssignations(line: string) {
-            // TODO
+            var findAssignations: RegExp = new RegExp('((?:\w+)(?:\[\d+\])?) ?= ?((?:-?\w+)|\[.+\])');
+            var findArrayInDeclaration: RegExp = new RegExp('(\w+)\[(\d+)\]');
+            var findArrayInValue: RegExp = new RegExp('\[(?: *(\w*)=(\w*) *)*\]');
+            var readArrayInValue: RegExp = new RegExp('(\w*)=(\w*)');
+            var assignations = findAssignations.exec(line);
+            var result = {};
+            for (var i = 0; i < assignations.length; i+=2) { // TODO : Refactor and test this. 
+                var key = assignations[i];
+                var value = assignations[i+1];
+                var resultValue;
+                // Check if there are arrays involved in the value
+                if (findArrayInValue.test(value)) {
+                    var arrayResult = readArrayInValue.exec(value);
+                    for (var j = 0; j < arrayResult.length; j+=2) {
+                        resultValue[arrayResult[j]] = arrayResult[j+1];
+                    }
+                } else {
+                    resultValue = value;
+                }
+                // Check if there are arrays involved in the key
+                if (findArrayInDeclaration.test(key)) {
+                    var arrayResult = findArrayInDeclaration.exec(key);
+                    var arrayName = arrayResult[0];
+                    var arrayIndex = arrayResult[1];
+                    result[arrayName][arrayIndex] = value;
+                } else {
+                    result[key] = resultValue; 
+                }
+            }
         }
         
         private parseFullEntity(): void {
