@@ -20,7 +20,7 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
-///<reference path="Viewer.ts"/>
+///<reference path="viewer.ts"/>
 
 namespace HearthPlays {
     export class Launcher {
