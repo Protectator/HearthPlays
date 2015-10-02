@@ -21,5 +21,8 @@
 */
 
 ///<reference path="lib/qunit"/>
+///<reference path="replayParserTest"/>
+
+HearthPlaysTest.ReplayParserTest.run();
 
 QUnit.start();

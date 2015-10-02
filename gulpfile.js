@@ -9,6 +9,8 @@ gulp.task('default', ['build']);
 
 gulp.task('build', ['buildApp', 'buildTest']);
 
+gulp.task('test', ['build', 'testPhantom']);
+
 gulp.task('buildApp', function() {
   var tsResult = app.src()
     .pipe(ts(app));
@@ -21,6 +23,6 @@ gulp.task('buildTest', function() {
   return tsResult.js.pipe(gulp.dest('out'));
 });
 
-gulp.task('test', function() {
+gulp.task('testPhantom', function() {
   return gulp.src('./test/test.html').pipe(qunit());
 });

@@ -42,11 +42,11 @@ namespace HearthPlays {
         
         // Parser state
         private currentLineNumber: number;
-        
+
         private get currentLine(): LogLine {
             return this.lines[this.currentLineNumber];
         }
-        
+
         private expectedPP: number;
 
         public parse(logs: string): Replay {
@@ -126,7 +126,7 @@ namespace HearthPlays {
                     throw new Error("Unknown method name");
             }
         }
-        
+
         private parseCreateGame(): void {
             // Creating the event we'll return
             var event: CreateGame = new CreateGame();
@@ -150,101 +150,97 @@ namespace HearthPlays {
                     line = this.nextLine();
                     
                     // Getting all tag values in it
-                    var currentTag: Tag;
+                    var currLine;
                     while (line.indentation > parentIndentation) {
-                        currentTag = this.readTag();
-                        event.gameEntity.setTag(currentTag.key, currentTag.value);
+                        currLine = ReplayParser.readAssignations(line.print);
+                        for (var currKey in currLine) {
+                            event.gameEntity.setTag(currKey, currLine[currKey]);
+                        }
                         line = this.nextLine();
                     }
                 } else if (words[0] == "Player") {
                     console.log(event); // TODO : See if GameEntity works
                     // TODO
                 }
-                
+
 
             }
-        }
-        
-        /**
-         * Used to extract the tag name and value of a tag line
-         * Current line must be a tag one
-         */
-        private readTag(): Tag {
-            var words = this.currentLine.print.split(" ");
-            var parts;
-            var key, value: string;
-            for (var word in words) {
-                parts = word.split("="); 
-                if (parts[0] == "tag") {
-                    key = parts[1];
-                } else if (parts[0] == "value") {
-                    value = parts[1];
-                } else {
-                    throw new Error("Unknown tag parameter");
-                }
-            }
-            return new Tag(key, value);
         }
         
         /**
          * Used to read a line containing assignations like "HEALTH=3 SOMETHING=[hi=2 low=4]"
          */
-        private readAssignations(line: string) {
-            var findAssignations: RegExp = new RegExp('((?:\w+)(?:\[\d+\])?) ?= ?((?:-?\w+)|\[.+\])');
-            var findArrayInDeclaration: RegExp = new RegExp('(\w+)\[(\d+)\]');
-            var findArrayInValue: RegExp = new RegExp('\[(?: *(\w*)=(\w*) *)*\]');
-            var readArrayInValue: RegExp = new RegExp('(\w*)=(\w*)');
-            var assignations = findAssignations.exec(line);
+        public static readAssignations(line: string): any {
+            var findAssignations: RegExp = new RegExp('((?:\\w+)(?:\\[\\d+\\])?) ?= ?((?:-?\\w+)|\\[.+\\])', 'g');
+            var findArrayInDeclaration: RegExp = new RegExp('(\\w+)\\[(\\d+)\\]', 'g');
+            var findArrayInValue: RegExp = new RegExp('\\[(?: *(\\w*)=(\\w*) *)*\\]', 'g');
+            var readArrayInValue: RegExp = new RegExp('(\\w*)=(\\w*)', 'g');
+            // var assignations = findAssignations.exec(line);
+            var assignations: any = new Array();
+            var replaceFunct = function(a, b, c): string { // TODO : Refactor and do the logic in this function
+                assignations.push(b);
+                assignations.push(c);
+                return a;
+            }
+            line.replace(findAssignations, replaceFunct);
             var result = {};
-            for (var i = 0; i < assignations.length; i+=2) { // TODO : Refactor and test this. 
+            for (var i = 0; i < assignations.length; i += 2) {
                 var key = assignations[i];
-                var value = assignations[i+1];
+                var value = assignations[i + 1];
                 var resultValue;
                 // Check if there are arrays involved in the value
                 if (findArrayInValue.test(value)) {
                     var arrayResult = readArrayInValue.exec(value);
-                    for (var j = 0; j < arrayResult.length; j+=2) {
-                        resultValue[arrayResult[j]] = arrayResult[j+1];
+                    for (var j = 0; j < arrayResult.length; j += 2) {
+                        resultValue[arrayResult[j]] = ReplayParser.tryParseInt(arrayResult[j + 1]);
                     }
                 } else {
-                    resultValue = value;
+                    resultValue = ReplayParser.tryParseInt(value);
                 }
                 // Check if there are arrays involved in the key
-                if (findArrayInDeclaration.test(key)) {
-                    var arrayResult = findArrayInDeclaration.exec(key);
-                    var arrayName = arrayResult[0];
-                    var arrayIndex = arrayResult[1];
-                    result[arrayName][arrayIndex] = value;
+                var arrayResult = findArrayInDeclaration.exec(key);
+                if (arrayResult != null) {
+                    var arrayName = arrayResult[1];
+                    var arrayIndex = arrayResult[2];
+                    if (result[arrayName] == null) {
+                        result[arrayName] = {};
+                    }
+                    result[arrayName][arrayIndex] = resultValue;
                 } else {
-                    result[key] = resultValue; 
+                    result[key] = resultValue;
                 }
             }
+            return result;
         }
-        
+
+        private static tryParseInt(value: string): (string|number) {
+            return isNaN(parseInt(value)) ? value : parseInt(value);
+        }
+
         private parseFullEntity(): void {
 
             var event = new FullEntity();
             // TODO
         }
-        
+
         private parseAction(): void {
 
             var event = new Action();
             // TODO
         }
-        
+
         private parseTagChange(): void {
 
             var event = new TagChange();
             // TODO
         }
-        
+
         private parseShowEntity(): void {
 
             var event = new ShowEntity();
             // TODO
         }
-        
+
         private parseHideEntity(): void {
 
             var event = new HideEntity();
@@ -259,7 +255,7 @@ namespace HearthPlays {
             }
             this.nextLine();
         }
-        
+
         private nextLine(): LogLine {
             this.currentLineNumber++;
             return this.currentLine;
