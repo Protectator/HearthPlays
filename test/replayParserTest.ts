@@ -27,27 +27,88 @@
 namespace HearthPlaysTest {
     export class ReplayParserTest {
         public static run() {
-            QUnit.test("Parser tests", function(assert) {
+            QUnit.module("Parser");
+            QUnit.test("Mono values only", function(assert) {
                 var tests: Array<TestCase> = new Array<TestCase>();
-                tests.push(new TestCase("HEALTH=3", {"HEALTH" : 3}));
-                tests.push(new TestCase("HEALTH=ALOT", {"HEALTH" : "ALOT"}));
-                tests.push(new TestCase("HEALTH=3 ATTACK=2", {"HEALTH" : 3, "ATTACK" : 2}));
-                tests.push(new TestCase("HEALTH=HEALTH ATTACK=ATTACK", {"HEALTH" : "HEALTH", "ATTACK" : "ATTACK"}));
-                tests.push(new TestCase("ARRAY[0]=0", {"ARRAY" : {"0" : 0}}));
+                tests.push(new TestCase("HEALTH=3", { "HEALTH": 3 }));
+                tests.push(new TestCase("HEALTH=ALOT", { "HEALTH": "ALOT" }));
+                tests.push(new TestCase("HEALTH=3 ATTACK=2", { "HEALTH": 3, "ATTACK": 2 }));
+                tests.push(new TestCase("HEALTH=HEALTH ATTACK=ATTACK", { "HEALTH": "HEALTH", "ATTACK": "ATTACK" }));
+                tests.push(new TestCase("2=3", { "2": 3 }));
+                tests.push(new TestCase("4=SOMEVALUE", { "4": "SOMEVALUE" }));
+                tests.push(new TestCase("-5=5", { "-5": 5 }));
+                tests.push(new TestCase("-6=-6", { "-6": -6 }));
+                tests.push(new TestCase("HEALTH=-12", { "HEALTH": -12 }));
+                tests.push(new TestCase("SOMETAG=0", { "SOMETAG": 0 }));
+                tests.push(new TestCase("12SOMETAG=22TAG", { "12SOMETAG": 22 }));
+                tests.push(new TestCase("SOMETAG330=TAG7", { "SOMETAG330": "TAG7" }));
+                tests.push(new TestCase("SOMETAG=-0", { "SOMETAG": 0 }));
+                tests.push(new TestCase("-SOMETAG=-0", { "-SOMETAG": 0 }));
+                tests.push(new TestCase("-0=-0", { "-0": 0 }));
+                tests.push(new TestCase("HEALTH=-ATTACK", { "HEALTH": "-ATTACK" }));
+                tests.push(new TestCase("    TAG_CHANGE=-TAG_CHANGE", { "TAG_CHANGE": "-TAG_CHANGE" }));
+                tests.push(new TestCase("    TAG_CHANGE TAG_CHANGE=TAG_CHANGE", { "TAG_CHANGE": "TAG_CHANGE" }));
+                tests.push(new TestCase("    tag=ZONE value=DECK", { "tag": "ZONE", "value": "DECK" }));
+                tests.push(new TestCase("FULL_ENTITY - Creating ID=6 CardID=EX1_032", { "ID": 6, "CardID": "EX1_032" }));
+                tests.push(new TestCase("FULL_ENTITY - Creating ID=7 CardID=", { "ID": 7 }));
                 for (var idx in tests) {
                     var test = tests[idx];
                     var result = HearthPlays.ReplayParser.readAssignations(test.argument);
-                    var message = "Parsing '" + test.argument + "'";
+                    var message = "Parsing '" + test.argument + "' returns " + JSON.stringify(test.expected);
                     assert.deepEqual(result, test.expected, message);
                 }
             });
+
+            QUnit.test("Array in key", function(assert) {
+                var tests: Array<TestCase> = new Array<TestCase>();
+                tests.push(new TestCase("ARRAY[0]=0", { "ARRAY": { "0": 0 } }));
+                tests.push(new TestCase("ARRAY[2]=144", { "ARRAY": { "2": 144 } }));
+                tests.push(new TestCase("DATA[-1]=VALUE", { "DATA": { "-1": "VALUE" } }));
+                tests.push(new TestCase("ENTITY[ID]=-0", { "ENTITY": { "ID": 0 } }));
+                tests.push(new TestCase("ID[-DECK]=-ZONE", { "ID": { "-DECK": "-ZONE" } }));
+                tests.push(new TestCase("ARRAY[2ID2]=-42", { "ARRAY": { "2ID2": -42 } }));
+                tests.push(new TestCase("ARRAY[2]=2 ARRAY[3]=-3", { "ARRAY": { "2": 2, "3": -3 } }));
+                tests.push(new TestCase("ARRAY[5]= ARRAY[6]=-3", { "ARRAY": { "6": -3 } }));
+                tests.push(new TestCase("12[5]=0 12[6]=-3 13[6]=13", { "12": { "5": 0, "6": -3 }, "13": {"6": 13} }));
+                tests.push(new TestCase("ID[-DECK]=ENTITY ID[DECK]=ID ID[ID]=DECK DECK[ENTITY]=-0",
+                    { "ID": { "-DECK": "ENTITY", "DECK": "ID", "ID": "DECK"}, "DECK": {"ENTITY": 0} }));
+                for (var idx in tests) {
+                    var test = tests[idx];
+                    var result = HearthPlays.ReplayParser.readAssignations(test.argument);
+                    var message = "Parsing '" + test.argument + "' returns " + JSON.stringify(test.expected);
+                    assert.deepEqual(result, test.expected, message);
+                }
+            });
+           
+            QUnit.test("Array in value", function(assert) {
+                var tests: Array<TestCase> = new Array<TestCase>();
+                tests.push(new TestCase("ARRAY=[first=1]", { "ARRAY": { "first": 1 } }));
+                for (var idx in tests) {
+                    var test = tests[idx];
+                    var result = HearthPlays.ReplayParser.readAssignations(test.argument);
+                    var message = "Parsing '" + test.argument + "' returns " + JSON.stringify(test.expected);
+                    assert.deepEqual(result, test.expected, message);
+                }
+            });
+            
+            /*
+            QUnit.test("Array in both key and value", function(assert) {
+                var tests: Array<TestCase> = new Array<TestCase>();
+                for (var idx in tests) {
+                    var test = tests[idx];
+                    var result = HearthPlays.ReplayParser.readAssignations(test.argument);
+                    var message = "Parsing '" + test.argument + "' returns " + JSON.stringify(test.expected);
+                    assert.deepEqual(result, test.expected, message);
+                }
+            });
+            */
         }
     }
-    
+
     class TestCase {
         public argument: any;
         public expected: any;
-        
+
         constructor(argument: any, expected: any) {
             this.argument = argument;
             this.expected = expected;

@@ -171,11 +171,7 @@ namespace HearthPlays {
          * Used to read a line containing assignations like "HEALTH=3 SOMETHING=[hi=2 low=4]"
          */
         public static readAssignations(line: string): any {
-            var findAssignations: RegExp = new RegExp('((?:\\w+)(?:\\[\\d+\\])?) ?= ?((?:-?\\w+)|\\[.+\\])', 'g');
-            var findArrayInDeclaration: RegExp = new RegExp('(\\w+)\\[(\\d+)\\]', 'g');
-            var findArrayInValue: RegExp = new RegExp('\\[(?: *(\\w*)=(\\w*) *)*\\]', 'g');
-            var readArrayInValue: RegExp = new RegExp('(\\w*)=(\\w*)', 'g');
-            // var assignations = findAssignations.exec(line);
+            var findAssignations: RegExp = new RegExp('((?:(?:\\w|-)+)(?:\\[(?:\\w|-)+\\])?) ?= ?((?:-?\\w+)|\\[.+\\])', 'g');
             var assignations: any = new Array();
             var replaceFunct = function(a, b, c): string { // TODO : Refactor and do the logic in this function
                 assignations.push(b);
@@ -185,6 +181,10 @@ namespace HearthPlays {
             line.replace(findAssignations, replaceFunct);
             var result = {};
             for (var i = 0; i < assignations.length; i += 2) {
+                var findArrayInDeclaration: RegExp = new RegExp('((?:\\w|-)+)\\[((?:\\w|-)+)\\]', 'g');
+                var findArrayInValue: RegExp = new RegExp('\\[(?: *(?:(\\w|-)*)=(.*) *)*\\]', 'g');
+                // The next regexp can be improved by one that doesn't capture the last space of the right part of assignation
+                var readArrayInValue: RegExp = new RegExp('((?:\\w|\\d)+)=((?:[^=]+[^(\\w*=)])+)(?=(?:\\w)+=)', 'g');
                 var key = assignations[i];
                 var value = assignations[i + 1];
                 var resultValue;
