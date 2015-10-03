@@ -83,6 +83,17 @@ namespace HearthPlaysTest {
             QUnit.test("Array in value", function(assert) {
                 var tests: Array<TestCase> = new Array<TestCase>();
                 tests.push(new TestCase("ARRAY=[first=1]", { "ARRAY": { "first": 1 } }));
+                tests.push(new TestCase("FNU=[2=3]", { "FNU": { "2": 3 } }));
+                tests.push(new TestCase("ENTITY=[1=first]", { "ENTITY": { "1": "first" } }));
+                tests.push(new TestCase("ENTITY=[4=-7]", { "ENTITY": { "4": -7 } }));
+                tests.push(new TestCase("ENTITY=[-2=-0]", { "ENTITY": { "-2": 0 } }));
+                tests.push(new TestCase("-2=[ENTITY=01LIFE]", { "-2": { "ENTITY": 1 } }));
+                tests.push(new TestCase("ENTITY=[01=LIFE01]", { "ENTITY": { "01": "LIFE01" } }));
+                tests.push(new TestCase("ENTITY=[01=LIFE01 2=TEST]", { "ENTITY": { "01": "LIFE01", "2": "TEST" } }));
+                tests.push(new TestCase("ENTITY=[HEALTH=15 ATTACK=-15 -15ATTACK=]",
+                { "ENTITY": { "HEALTH": 15, "ATTACK": -15 } }));
+                tests.push(new TestCase("ENTITY=[HEALTH=-0 0= 12=2 -9=ATTACK]",
+                { "ENTITY": { "HEALTH": 0, "12": 2, "-9": "ATTACK" } }));
                 for (var idx in tests) {
                     var test = tests[idx];
                     var result = HearthPlays.ReplayParser.readAssignations(test.argument);
@@ -91,9 +102,9 @@ namespace HearthPlaysTest {
                 }
             });
             
-            /*
             QUnit.test("Array in both key and value", function(assert) {
                 var tests: Array<TestCase> = new Array<TestCase>();
+                tests.push(new TestCase("ENTITY[0]=[HEALTH=2]", { "ENTITY": { "0": {"HEALTH": 2} } }));
                 for (var idx in tests) {
                     var test = tests[idx];
                     var result = HearthPlays.ReplayParser.readAssignations(test.argument);
@@ -101,7 +112,6 @@ namespace HearthPlaysTest {
                     assert.deepEqual(result, test.expected, message);
                 }
             });
-            */
         }
     }
 

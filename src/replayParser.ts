@@ -192,7 +192,7 @@ namespace HearthPlays {
                 findArrayInValue = /\[(?: *(?:(\w|-)*)=(.*) *)*\]/g;
                 if (findArrayInValue.test(value)) {
                     resultValue = {};
-                    readArrayInValue = /((?:\w|\d)+)=((?:[^ =\]]+ *(?!\S+=))+)/g;
+                    readArrayInValue = /([^ \[\t\n\r]+)=((?:[^ =\]]+ *(?!\S+=))+)/g;
                     var arrayValueResult: any = new Array();
                     var replaceArrayValueFunct = function(a, b, c): string { // TODO : Refactor and do the logic in this function
                         arrayValueResult.push(b);
