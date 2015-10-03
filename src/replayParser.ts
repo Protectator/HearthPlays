@@ -171,7 +171,10 @@ namespace HearthPlays {
          * Used to read a line containing assignations like "HEALTH=3 SOMETHING=[hi=2 low=4]"
          */
         public static readAssignations(line: string): any {
-            var findAssignations: RegExp = new RegExp('((?:(?:\\w|-)+)(?:\\[(?:\\w|-)+\\])?) ?= ?((?:-?\\w+)|\\[.+\\])', 'g');
+            var findAssignations: RegExp = /((?:(?:\w|-)+)(?:\[(?:\w|-)+\])?)=((?:-?\w+)|\[.+\])/g;
+            var findArrayInDeclaration: RegExp;
+            var findArrayInValue: RegExp;
+            var readArrayInValue: RegExp;
             var assignations: any = new Array();
             var replaceFunct = function(a, b, c): string { // TODO : Refactor and do the logic in this function
                 assignations.push(b);
@@ -181,27 +184,34 @@ namespace HearthPlays {
             line.replace(findAssignations, replaceFunct);
             var result = {};
             for (var i = 0; i < assignations.length; i += 2) {
-                var findArrayInDeclaration: RegExp = new RegExp('((?:\\w|-)+)\\[((?:\\w|-)+)\\]', 'g');
-                var findArrayInValue: RegExp = new RegExp('\\[(?: *(?:(\\w|-)*)=(.*) *)*\\]', 'g');
                 // The next regexp can be improved by one that doesn't capture the last space of the right part of assignation
-                var readArrayInValue: RegExp = new RegExp('((?:\\w|\\d)+)=((?:[^=]+[^(\\w*=)])+)(?=(?:\\w)+=)', 'g');
                 var key = assignations[i];
                 var value = assignations[i + 1];
                 var resultValue;
                 // Check if there are arrays involved in the value
+                findArrayInValue = /\[(?: *(?:(\w|-)*)=(.*) *)*\]/g;
                 if (findArrayInValue.test(value)) {
-                    var arrayResult = readArrayInValue.exec(value);
-                    for (var j = 0; j < arrayResult.length; j += 2) {
-                        resultValue[arrayResult[j]] = ReplayParser.tryParseInt(arrayResult[j + 1]);
+                    resultValue = {};
+                    readArrayInValue = /((?:\w|\d)+)=((?:[^ =\]]+ *(?!\S+=))+)/g;
+                    var arrayValueResult: any = new Array();
+                    var replaceArrayValueFunct = function(a, b, c): string { // TODO : Refactor and do the logic in this function
+                        arrayValueResult.push(b);
+                        arrayValueResult.push(c);
+                        return a;
+                    }
+                    value.replace(readArrayInValue, replaceArrayValueFunct)
+                    for (var j = 0; j < arrayValueResult.length; j += 2) {
+                        resultValue[arrayValueResult[j]] = ReplayParser.tryParseInt(arrayValueResult[j + 1]);
                     }
                 } else {
                     resultValue = ReplayParser.tryParseInt(value);
                 }
                 // Check if there are arrays involved in the key
-                var arrayResult = findArrayInDeclaration.exec(key);
-                if (arrayResult != null) {
-                    var arrayName = arrayResult[1];
-                    var arrayIndex = arrayResult[2];
+                findArrayInDeclaration = /((?:\w|-)+)\[((?:\w|-)+)\]/g;
+                var arrayDeclarationResult = findArrayInDeclaration.exec(key);
+                if (arrayDeclarationResult != null) {
+                    var arrayName = arrayDeclarationResult[1];
+                    var arrayIndex = arrayDeclarationResult[2];
                     if (result[arrayName] == null) {
                         result[arrayName] = {};
                     }
