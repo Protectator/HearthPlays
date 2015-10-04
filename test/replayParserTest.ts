@@ -88,6 +88,7 @@ namespace HearthPlaysTest {
                 tests.push(new TestCase("ENTITY=[4=-7]", { "ENTITY": { "4": -7 } }));
                 tests.push(new TestCase("ENTITY=[-2=-0]", { "ENTITY": { "-2": 0 } }));
                 tests.push(new TestCase("-2=[ENTITY=01LIFE]", { "-2": { "ENTITY": 1 } }));
+                tests.push(new TestCase("ENTITY=[ENTITY=]", { "ENTITY": { } }));
                 tests.push(new TestCase("ENTITY=[01=LIFE01]", { "ENTITY": { "01": "LIFE01" } }));
                 tests.push(new TestCase("ENTITY=[01=LIFE01 2=TEST]", { "ENTITY": { "01": "LIFE01", "2": "TEST" } }));
                 tests.push(new TestCase("ENTITY=[HEALTH=15 ATTACK=-15 -15ATTACK=]",
@@ -105,6 +106,17 @@ namespace HearthPlaysTest {
             QUnit.test("Array in both key and value", function(assert) {
                 var tests: Array<TestCase> = new Array<TestCase>();
                 tests.push(new TestCase("ENTITY[0]=[HEALTH=2]", { "ENTITY": { "0": {"HEALTH": 2} } }));
+                tests.push(new TestCase("ENTITY[ID]=[HEALTH=0 ATTACK=-3]", { "ENTITY": { "ID": {"HEALTH": 0, "ATTACK": -3} } }));
+                tests.push(new TestCase("ENTITY[-2]=[03=03 -4=LIFE LIFE= TEST= TAG=TAG]", { "ENTITY": { "-2": {"03": 3, "-4": "LIFE", "TAG": "TAG"} } }));
+                tests.push(new TestCase("ENTITY[1]=[HEALTH=2 ENTITY=-0]", { "ENTITY": { "1": {"HEALTH": 2, "ENTITY":0} } }));
+                tests.push(new TestCase("ENTITY[013LIFE]=[HEALTH=2L ATTACK=]", { "ENTITY": { "013LIFE": {"HEALTH": 2} } }));
+                tests.push(new TestCase("ENTITY[2]=[HEALTH=L3]", { "ENTITY": { "2": {"HEALTH": "L3"} } }));
+                tests.push(new TestCase("ENTITY[0]=[HEALTH=2] ENTITY[0]=[ATTACK=3] ENTITY[0]=[COST=HEALTH]",
+                { "ENTITY": { "0": {"HEALTH": 2, "ATTACK": 3, "COST": "HEALTH"} } }));
+                tests.push(new TestCase("ENTITY[0]=[HEALTH=2 ATTACK=12] ENTITY[1]=[ATTACK=3] ENTITY[TEST]=23",
+                { "ENTITY": { "0": {"HEALTH": 2, "ATTACK": 12}, "1": {"ATTACK": 3}, "TEST": 23 } }));
+                tests.push(new TestCase("ENTITY[0]=[ENTITY=2] ENTITY[1]=[ATTACK=ATTACK] TEST[1]=[ENTITY=TEST TEST= TEST=-1 TEST=]",
+                { "ENTITY": { "0": {"ENTITY": 2}, "1": {"ATTACK": "ATTACK"} }, "TEST": {"1": {"ENTITY": "TEST", "TEST": -1}} }));
                 for (var idx in tests) {
                     var test = tests[idx];
                     var result = HearthPlays.ReplayParser.readAssignations(test.argument);

@@ -171,7 +171,7 @@ namespace HearthPlays {
          * Used to read a line containing assignations like "HEALTH=3 SOMETHING=[hi=2 low=4]"
          */
         public static readAssignations(line: string): any {
-            var findAssignations: RegExp = /((?:(?:\w|-)+)(?:\[(?:\w|-)+\])?)=((?:-?\w+)|\[.+\])/g;
+            var findAssignations: RegExp = /(\S*?(?:\[\S+\])?)=(\[.*?\]|\S+)/g;
             var findArrayInDeclaration: RegExp;
             var findArrayInValue: RegExp;
             var readArrayInValue: RegExp;
@@ -188,6 +188,7 @@ namespace HearthPlays {
                 var key = assignations[i];
                 var value = assignations[i + 1];
                 var resultValue;
+                
                 // Check if there are arrays involved in the value
                 findArrayInValue = /\[(?: *(?:(\w|-)*)=(.*) *)*\]/g;
                 if (findArrayInValue.test(value)) {
@@ -204,19 +205,34 @@ namespace HearthPlays {
                         resultValue[arrayValueResult[j]] = ReplayParser.tryParseInt(arrayValueResult[j + 1]);
                     }
                 } else {
+                    // If no, simply parse the value
                     resultValue = ReplayParser.tryParseInt(value);
                 }
+                
                 // Check if there are arrays involved in the key
                 findArrayInDeclaration = /((?:\w|-)+)\[((?:\w|-)+)\]/g;
                 var arrayDeclarationResult = findArrayInDeclaration.exec(key);
                 if (arrayDeclarationResult != null) {
                     var arrayName = arrayDeclarationResult[1];
                     var arrayIndex = arrayDeclarationResult[2];
+                    // If the key doesn't exist, create it
                     if (result[arrayName] == null) {
                         result[arrayName] = {};
                     }
-                    result[arrayName][arrayIndex] = resultValue;
+                    // If the key already has an entry
+                    if (resultValue.constructor == Object &&
+                        result[arrayName][arrayIndex] != null &&
+                        result[arrayName][arrayIndex].constructor == Object) {
+                        // Add the assignations instead of erasing the old object
+                        for (var key in resultValue) {
+                            result[arrayName][arrayIndex][key] = resultValue[key];
+                        }
+                    } else {
+                        // If no entry, simply assign the object
+                        result[arrayName][arrayIndex] = resultValue;
+                    }
                 } else {
+                    // If there isn't any array in the key, simply assign the statement
                     result[key] = resultValue;
                 }
             }
