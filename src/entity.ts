@@ -22,14 +22,18 @@
 
 namespace HearthPlays {
 	export class Entity {
-        private tags: {[tag: string]: string};
+        private tags: {[tag: string]: string|number};
         
-        public getTag(tagName: string): string {
+        public getTag(tagName: string): string|number {
             return this.tags[tagName];
         }
         
-        public setTag(tagName: string, value: string): void {
+        public setTag(tagName: string, value: string|number): void {
             this.tags[tagName] = value;
+        }
+        
+        constructor() {
+            this.tags = {};
         }
 	}
 }

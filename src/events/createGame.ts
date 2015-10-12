@@ -31,8 +31,5 @@ namespace HearthPlays {
         public gameEntity: GameEntity;
         public players: Player[];
         
-        constructor() {
-            // TODO
-        }
     }
 }

@@ -57,7 +57,6 @@ namespace HearthPlays {
                 this.lines[i] = new LogLine(content[i]);
             }
             this.currentLineNumber = -1;
-            console.log(this.lines);
             while (this.currentLineNumber < this.lines.length) {
                 this.parseFirstLevelLine();
             }
@@ -95,7 +94,7 @@ namespace HearthPlays {
                             throw new Error("Misplaced META_DATA");
                             break;
                         case LogLineType.meta:
-                            throw new Error("Misplaced block information");
+                            throw new Error("Misplaced meta information");
                             break;
                         default:
                             throw new Error("Unrecognized event");
@@ -141,25 +140,34 @@ namespace HearthPlays {
                 
                 // Parsing the "GameEntity" part
                 if (words[0] == "GameEntity") {
-                    var entityIdWords = words[1].split("=");
-                    // Getting the EntityID of the line
-                    if (entityIdWords[0] == "EntityID") {
-                        event.gameEntity.entityID = parseInt(entityIdWords[1]);
-                    }
+                    var assignations = ReplayParser.readAssignations(line.print);
+                    event.gameEntity = new GameEntity(<number>assignations.EntityID);
+
                     var parentIndentation = line.indentation;
                     line = this.nextLine();
                     
                     // Getting all tag values in it
-                    var currLine;
                     while (line.indentation > parentIndentation) {
-                        currLine = ReplayParser.readAssignations(line.print);
-                        for (var currKey in currLine) {
-                            event.gameEntity.setTag(currKey, currLine[currKey]);
+                        assignations = ReplayParser.readAssignations(line.print);
+                        var tagKey: string;
+                        var tagValue: string|number;
+                        for (var assignationKey in assignations) {
+                            if (assignationKey == "tag") {
+                                tagKey = assignations[assignationKey];
+                            } else if (assignationKey == "value") {
+                                tagValue = assignations[assignationKey];
+                            } else {
+                                console.log("Unrecognized assignation in GameEntity : " + assignationKey);
+                            }
                         }
+                        event.gameEntity.setTag(tagKey, tagValue);
+                        console.log("Set tag " + tagKey + " to " + tagValue);
                         line = this.nextLine();
                     }
+                    console.log(event.gameEntity);
                 } else if (words[0] == "Player") {
-                    console.log(event); // TODO : See if GameEntity works
+                    // console.log(event); // TODO : See if GameEntity works
+                    this.nextLine();
                     // TODO
                 }
 
@@ -184,7 +192,6 @@ namespace HearthPlays {
             line.replace(findAssignations, replaceFunct);
             var result = {};
             for (var i = 0; i < assignations.length; i += 2) {
-                // The next regexp can be improved by one that doesn't capture the last space of the right part of assignation
                 var key = assignations[i];
                 var value = assignations[i + 1];
                 var resultValue;
@@ -283,7 +290,13 @@ namespace HearthPlays {
         }
 
         private nextLine(): LogLine {
+            if (this.currentLineNumber >= this.lines.length) {
+                throw new Error("Out of bounds");
+            }
             this.currentLineNumber++;
+            if (this.currentLineNumber%100==0) {
+                console.log("Parsing : " + this.currentLineNumber + " / " + this.lines.length);
+            }
             return this.currentLine;
         }
     }

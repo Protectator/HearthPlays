@@ -83,30 +83,30 @@ namespace HearthPlays {
 			this.print = indentLevels[this.indentation];
 			
 			// Check the type of the line
-			var typeWord = this.content.split(" ")[0];
+			var typeWord = this.content.split(" ")[0].trim();
 			switch (typeWord) {
-				case ("CREATE_GAME"):
+				case "CREATE_GAME":
 					this.type = LogLineType.CREATE_GAME;
 					break;
-				case ("FULL_ENTITY"):
+				case "FULL_ENTITY":
 					this.type = LogLineType.FULL_ENTITY;
 					break;
-				case ("ACTION_START"):
+				case "ACTION_START":
 					this.type = LogLineType.ACTION_START;
 					break;
-				case ("ACTION_END"):
+				case "ACTION_END":
 					this.type = LogLineType.ACTION_END;
 					break;
-				case ("TAG_CHANGE"):
+				case "TAG_CHANGE":
 					this.type = LogLineType.TAG_CHANGE;
 					break;
-				case ("SHOW_ENTITY"):
+				case "SHOW_ENTITY":
 					this.type = LogLineType.SHOW_ENTITY;
 					break;
-				case ("HIDE_ENTITY"):
+				case "HIDE_ENTITY":
 					this.type = LogLineType.HIDE_ENTITY;
 					break;
-				case ("META_DATA"):
+				case "META_DATA":
 					this.type = LogLineType.META_DATA;
 					break;
 				default:
