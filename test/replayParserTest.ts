@@ -21,13 +21,57 @@
 */
 
 ///<reference path="lib/qunit"/>
+///<reference path="../src/replay"/>
 ///<reference path="../src/replayParser"/>
 ///<reference path="../src/logLine"/>
 
 namespace HearthPlaysTest {
     export class ReplayParserTest {
+        
+        public static fileStart: string = `D 22:39:31.1128743 GameState.DebugPrintPower() - CREATE_GAME
+D 22:39:31.1128743 GameState.DebugPrintPower() -     GameEntity EntityID=1
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=10 value=85
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=TURN value=1
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=ZONE value=PLAY
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=ENTITY_ID value=1
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=NEXT_STEP value=BEGIN_MULLIGAN
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=CARDTYPE value=GAME
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=STATE value=RUNNING
+D 22:39:31.1128743 GameState.DebugPrintPower() -     Player EntityID=2 PlayerID=1 GameAccountId=[hi=144115198130930503 lo=29361374]
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=TIMEOUT value=75
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=PLAYSTATE value=PLAYING
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=CURRENT_PLAYER value=1
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=FIRST_PLAYER value=1
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=HERO_ENTITY value=4
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=MAXHANDSIZE value=10
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=STARTHANDSIZE value=4
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=PLAYER_ID value=1
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=TEAM_ID value=1
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=ZONE value=PLAY
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=CONTROLLER value=1
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=ENTITY_ID value=2
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=MAXRESOURCES value=10
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=CARDTYPE value=PLAYER
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=NUM_TURNS_LEFT value=1
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THIS_TURN value=3
+D 22:39:31.1128743 GameState.DebugPrintPower() -     Player EntityID=3 PlayerID=2 GameAccountId=[hi=144115198130930503 lo=20236080]
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=TIMEOUT value=75
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=PLAYSTATE value=PLAYING
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=HERO_ENTITY value=36
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=MAXHANDSIZE value=10
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=STARTHANDSIZE value=4
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=PLAYER_ID value=2
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=TEAM_ID value=2
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=ZONE value=PLAY
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=CONTROLLER value=2
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=ENTITY_ID value=3
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=MAXRESOURCES value=10
+D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=CARDTYPE value=PLAYER
+D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_TURNS_LEFT value=1
+D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THIS_TURN value=4`;
+        
         public static run() {
-            QUnit.module("Parser");
+            QUnit.module("Parser : Assignations");
             QUnit.test("Mono values only", function(assert) {
                 var tests: Array<TestCase> = new Array<TestCase>();
                 tests.push(new TestCase("HEALTH=3", { "HEALTH": 3 }));
@@ -124,6 +168,21 @@ namespace HearthPlaysTest {
                     assert.deepEqual(result, test.expected, message);
                 }
             });
+            
+            
+            QUnit.module("Parser : CREATE_GAME");
+            QUnit.test("Parsing GameEntity", function(assert) {
+                var tests: Array<TestCase> = new Array<TestCase>();
+                tests.push(new TestCase(ReplayParserTest.fileStart, 85));
+                for (var idx in tests) {
+                    var test = tests[idx];
+                    var parser = new HearthPlays.ReplayParser();
+                    var result = (<HearthPlays.CreateGame>parser.parse(test.argument).getTimeline()[0]).gameEntity.getTag("10");
+                    var message = "In first CREATE_GAME, GameEntity's tag \"10\" is '" + test.expected;
+                    assert.deepEqual(result, test.expected, message);
+                }
+            });
+            
         }
     }
 

@@ -31,5 +31,9 @@ namespace HearthPlays {
         public gameEntity: GameEntity;
         public players: Player[];
         
+        constructor() {
+            this.players = new Array<Player>();
+        }
+        
     }
 }

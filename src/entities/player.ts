@@ -25,11 +25,13 @@
 namespace HearthPlays {
 	export class Player extends Entity {
         public playerID: number;
+        public entityID: number;
         public gameAccountId: {[key: string]: number};
         
-        constructor(playerID: number, gameAccountId: {[key: string]: number}) {
+        constructor(playerID: number, entityID: number, gameAccountId: {[key: string]: number}) {
             super();
             this.playerID = playerID;
+            this.entityID = entityID;
             this.gameAccountId = gameAccountId;
         }
     }

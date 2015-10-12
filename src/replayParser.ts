@@ -42,6 +42,10 @@ namespace HearthPlays {
         
         // Parser state
         private currentLineNumber: number;
+        private line: LogLine;
+        
+        // Parser's current replay
+        private progressingReplay: Replay;
 
         private get currentLine(): LogLine {
             return this.lines[this.currentLineNumber];
@@ -57,15 +61,23 @@ namespace HearthPlays {
                 this.lines[i] = new LogLine(content[i]);
             }
             this.currentLineNumber = -1;
-            while (this.currentLineNumber < this.lines.length) {
-                this.parseFirstLevelLine();
+            this.nextLine();
+            try {
+                while (this.currentLineNumber < this.lines.length) {
+                    this.parseFirstLevelLine();
+                }
+            } catch (e) {
+                if (e instanceof RangeError) {
+                    return this.progressingReplay;
+                } else {
+                    throw e;
+                }
             }
             return null;
         }
 
         private parseFirstLevelLine(): void {
-            var line = this.nextLine();
-
+            var line = this.currentLine;
             switch (line.method) {
                 case LogLineMethod.DEBUG_PRINT_POWER:
                     switch (line.type) {
@@ -73,22 +85,32 @@ namespace HearthPlays {
                             this.parseCreateGame();
                             break;
                         case LogLineType.FULL_ENTITY:
-                            this.parseFullEntity();
+                            // TODO : Implement correctly
+                            //this.parseFullEntity();
+                            this.nextLine();
                             break;
                         case LogLineType.ACTION_START:
-                            this.parseAction();
+                            // TODO : Implement correctly
+                            //this.parseAction();
+                            this.nextLine();
                             break;
                         case LogLineType.ACTION_END:
                             throw new Error("Misplaced ACTION_END");
                             break;
                         case LogLineType.TAG_CHANGE:
-                            this.parseTagChange();
+                            // TODO : Implement correctly
+                            //this.parseTagChange();
+                            this.nextLine();
                             break;
                         case LogLineType.SHOW_ENTITY:
-                            this.parseShowEntity();
+                            // TODO : Implement correctly
+                            //this.parseShowEntity();
+                            this.nextLine();
                             break;
                         case LogLineType.HIDE_ENTITY:
-                            this.parseHideEntity();
+                            // TODO : Implement correctly
+                            //this.parseHideEntity();
+                            this.nextLine();
                             break;
                         case LogLineType.META_DATA:
                             throw new Error("Misplaced META_DATA");
@@ -102,23 +124,33 @@ namespace HearthPlays {
                     break;
 
                 case LogLineMethod.DEBUG_PRINT_POWER_LIST:
-                    this.parsePrintPowerList();
+                    // TODO : Implement correctly
+                    //this.parsePrintPowerList();
+                    this.nextLine();
                     break;
 
                 case LogLineMethod.DEBUG_PRINT_CHOICES:
-                    // TODO
+                    // TODO : Implement correctly
+                    //this.parseDebugPrintChoices();
+                    this.nextLine();
                     break;
 
                 case LogLineMethod.SEND_CHOICES:
-                    // TODO
+                    // TODO : Implement correctly
+                    //this.parseSendChoices();
+                    this.nextLine();
                     break;
 
                 case LogLineMethod.DEBUG_PRINT_OPTIONS:
-                    // TODO
+                    // TODO : Implement correctly
+                    //this.parseDebutPrintOptions();
+                    this.nextLine();
                     break;
 
                 case LogLineMethod.SEND_OPTION:
-                    // TODO
+                    // TODO : Implement correctly
+                    //this.parseSendOption();
+                    this.nextLine();
                     break;
 
                 default:
@@ -127,6 +159,7 @@ namespace HearthPlays {
         }
 
         private parseCreateGame(): void {
+            // TODO : Actually add the event to the replay
             // Creating the event we'll return
             var event: CreateGame = new CreateGame();
             // Checking if we're on the correct line
@@ -152,10 +185,11 @@ namespace HearthPlays {
                         var tagKey: string;
                         var tagValue: string|number;
                         for (var assignationKey in assignations) {
+                            var assignationValue = assignations[assignationKey];
                             if (assignationKey == "tag") {
-                                tagKey = assignations[assignationKey];
+                                tagKey = assignationValue;
                             } else if (assignationKey == "value") {
-                                tagValue = assignations[assignationKey];
+                                tagValue = assignationValue;
                             } else {
                                 console.log("Unrecognized assignation in GameEntity : " + assignationKey);
                             }
@@ -165,14 +199,56 @@ namespace HearthPlays {
                         line = this.nextLine();
                     }
                     console.log(event.gameEntity);
+                    
                 } else if (words[0] == "Player") {
-                    // console.log(event); // TODO : See if GameEntity works
-                    this.nextLine();
-                    // TODO
+                    var assignations = ReplayParser.readAssignations(line.print);
+                    var entityID: number;
+                    var playerID: number;
+                    var gameAccountId;
+                    for (var assignationKey in assignations) {
+                        var assignationValue = assignations[assignationKey];
+                        switch (assignationKey) {
+                            case "EntityID":
+                                entityID = assignationValue;
+                                break;
+                            case "PlayerID":
+                                playerID = assignationValue;
+                                break;
+                            case "GameAccountId":
+                                gameAccountId = assignationValue;
+                                break;
+                            default:
+                                console.log("Unrecognized assignation in GameEntity : " + assignationKey);
+                        }
+                    }
+                    var player = new Player(entityID, playerID, gameAccountId);
+
+                    var parentIndentation = line.indentation;
+                    line = this.nextLine();
+                    
+                    // Getting all tag values in it
+                    while (line.indentation > parentIndentation) {
+                        assignations = ReplayParser.readAssignations(line.print);
+                        var tagKey: string;
+                        var tagValue: string|number;
+                        for (var assignationKey in assignations) {
+                            var assignationValue = assignations[assignationKey];
+                            if (assignationKey == "tag") {
+                                tagKey = assignationValue;
+                            } else if (assignationKey == "value") {
+                                tagValue = assignationValue;
+                            } else {
+                                console.log("Unrecognized assignation in Player : " + assignationKey);
+                            }
+                        }
+                        player.setTag(tagKey, tagValue);
+                        console.log("Set tag " + tagKey + " to " + tagValue);
+                        line = this.nextLine();
+                    }
+                    event.players.push(player);
                 }
-
-
             }
+            console.log(event);
         }
         
         /**
@@ -184,42 +260,25 @@ namespace HearthPlays {
             var findArrayInValue: RegExp;
             var readArrayInValue: RegExp;
             var assignations: any = new Array();
-            var replaceFunct = function(a, b, c): string { // TODO : Refactor and do the logic in this function
-                assignations.push(b);
-                assignations.push(c);
-                return a;
-            }
-            line.replace(findAssignations, replaceFunct);
             var result = {};
-            for (var i = 0; i < assignations.length; i += 2) {
-                var key = assignations[i];
-                var value = assignations[i + 1];
-                var resultValue;
-                
-                // Check if there are arrays involved in the value
+            var replaceFunct = function(a, key, value): string {
                 findArrayInValue = /\[(?: *(?:(\w|-)*)=(.*) *)*\]/g;
-                if (findArrayInValue.test(value)) {
-                    resultValue = {};
+
+                if (findArrayInValue.test(value)) { // Check if there are arrays involved in the value
+                    var resultValue = {};
                     readArrayInValue = /([^ \[\t\n\r]+)=((?:[^ =\]]+ *(?!\S+=))+)/g;
-                    var arrayValueResult: any = new Array();
-                    var replaceArrayValueFunct = function(a, b, c): string { // TODO : Refactor and do the logic in this function
-                        arrayValueResult.push(b);
-                        arrayValueResult.push(c);
+                    var replaceArrayValueFunct = function(a, b, c): string {
+                        resultValue[b] = ReplayParser.tryParseInt(c);
                         return a;
                     }
-                    value.replace(readArrayInValue, replaceArrayValueFunct)
-                    for (var j = 0; j < arrayValueResult.length; j += 2) {
-                        resultValue[arrayValueResult[j]] = ReplayParser.tryParseInt(arrayValueResult[j + 1]);
-                    }
-                } else {
-                    // If no, simply parse the value
+                    value.replace(readArrayInValue, replaceArrayValueFunct);
+                } else { // If no, simply parse the value
                     resultValue = ReplayParser.tryParseInt(value);
                 }
-                
-                // Check if there are arrays involved in the key
+
                 findArrayInDeclaration = /((?:\w|-)+)\[((?:\w|-)+)\]/g;
                 var arrayDeclarationResult = findArrayInDeclaration.exec(key);
-                if (arrayDeclarationResult != null) {
+                if (arrayDeclarationResult != null) { // Check if there are arrays involved in the key
                     var arrayName = arrayDeclarationResult[1];
                     var arrayIndex = arrayDeclarationResult[2];
                     // If the key doesn't exist, create it
@@ -242,7 +301,9 @@ namespace HearthPlays {
                     // If there isn't any array in the key, simply assign the statement
                     result[key] = resultValue;
                 }
-            }
+                return a;
+            };
+            line.replace(findAssignations, replaceFunct);
             return result;
         }
 
@@ -290,11 +351,11 @@ namespace HearthPlays {
         }
 
         private nextLine(): LogLine {
-            if (this.currentLineNumber >= this.lines.length) {
-                throw new Error("Out of bounds");
-            }
             this.currentLineNumber++;
-            if (this.currentLineNumber%100==0) {
+            if (this.currentLineNumber >= this.lines.length) {
+                throw new RangeError("No more lines");
+            }
+            if (this.currentLineNumber % 100 == 0) {
                 console.log("Parsing : " + this.currentLineNumber + " / " + this.lines.length);
             }
             return this.currentLine;

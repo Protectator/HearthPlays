@@ -22,12 +22,18 @@
 
 namespace HearthPlays {
     export class Replay {
-        private timeline: Event
+        private timeline: ReplayEvent[];
         
         constructor() {
-            // TODO EVERYTHING
+            this.timeline = new Array<ReplayEvent>();
         }
         
-        // TODO LOTS OF THINGS
+        public addEvent(event: ReplayEvent): void {
+            this.timeline.push(event);
+        }
+        
+        public getTimeline(): ReplayEvent[] {
+            return this.timeline;
+        }
     }
 }
