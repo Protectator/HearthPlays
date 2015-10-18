@@ -34,8 +34,6 @@ namespace HearthPlays {
 		public print: string;
 		/** Should be true. If not, it might be the last line of the file, and 'last' should be true. */
 		public valid: boolean = false;
-		/** True if it is detected as the last line. */
-		public last: boolean = false;
 		public method: LogLineMethod;
 		public type: LogLineType;
 
@@ -73,7 +71,7 @@ namespace HearthPlays {
 				// This might be the last line
 				if (e instanceof TypeError && this.content == undefined) {
 					// If it is, mark it as the last
-					this.last = true;
+					this.method = LogLineMethod.lastLine;
 					return;
 				}
 				// Else, this ain't normal : Throw the error.
@@ -112,7 +110,6 @@ namespace HearthPlays {
 				default:
 					this.type = LogLineType.meta;
 			}
-
 			this.valid = true;
 		}
 	}

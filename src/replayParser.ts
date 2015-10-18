@@ -42,18 +42,21 @@ namespace HearthPlays {
         
         // Parser state
         private currentLineNumber: number;
-        private line: LogLine;
         
         // Parser's current replay
         private progressingReplay: Replay;
 
         private get currentLine(): LogLine {
+            if (this.currentLineNumber == this.lines.length) {
+                return new LogLine(""); // Return a last line
+            }
             return this.lines[this.currentLineNumber];
         }
 
         private expectedPP: number;
 
         public parse(logs: string): Replay {
+            this.progressingReplay = new Replay();
             var content: string[] = logs.split("\n");
             this.lines = new Array<LogLine>();
             this.events = new Array<ReplayEvent>();
@@ -73,7 +76,7 @@ namespace HearthPlays {
                     throw e;
                 }
             }
-            return null;
+            return this.progressingReplay;
         }
 
         private parseFirstLevelLine(): void {
@@ -82,7 +85,7 @@ namespace HearthPlays {
                 case LogLineMethod.DEBUG_PRINT_POWER:
                     switch (line.type) {
                         case LogLineType.CREATE_GAME:
-                            this.parseCreateGame();
+                            this.progressingReplay.addEvent(this.parseCreateGame());
                             break;
                         case LogLineType.FULL_ENTITY:
                             // TODO : Implement correctly
@@ -152,13 +155,18 @@ namespace HearthPlays {
                     //this.parseSendOption();
                     this.nextLine();
                     break;
+                    
+                case LogLineMethod.lastLine:
+                    this.nextLine();
+                    return;
+                    break;
 
                 default:
                     throw new Error("Unknown method name");
             }
         }
 
-        private parseCreateGame(): void {
+        private parseCreateGame(): CreateGame {
             // TODO : Actually add the event to the replay
             // Creating the event we'll return
             var event: CreateGame = new CreateGame();
@@ -221,7 +229,7 @@ namespace HearthPlays {
                                 console.log("Unrecognized assignation in GameEntity : " + assignationKey);
                         }
                     }
-                    var player = new Player(entityID, playerID, gameAccountId);
+                    var player = new Player(playerID, entityID, gameAccountId);
 
                     var parentIndentation = line.indentation;
                     line = this.nextLine();
@@ -242,13 +250,12 @@ namespace HearthPlays {
                             }
                         }
                         player.setTag(tagKey, tagValue);
-                        console.log("Set tag " + tagKey + " to " + tagValue);
                         line = this.nextLine();
                     }
                     event.players.push(player);
                 }
             }
-            console.log(event);
+            return event;
         }
         
         /**
@@ -353,10 +360,7 @@ namespace HearthPlays {
         private nextLine(): LogLine {
             this.currentLineNumber++;
             if (this.currentLineNumber >= this.lines.length) {
-                throw new RangeError("No more lines");
-            }
-            if (this.currentLineNumber % 100 == 0) {
-                console.log("Parsing : " + this.currentLineNumber + " / " + this.lines.length);
+                this.currentLineNumber = this.lines.length;
             }
             return this.currentLine;
         }

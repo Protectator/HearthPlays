@@ -27,6 +27,7 @@ namespace HearthPlays {
         DEBUG_PRINT_CHOICES,
         SEND_CHOICES,
         DEBUG_PRINT_OPTIONS,
-        SEND_OPTION
+        SEND_OPTION,
+        lastLine
 	}
 }

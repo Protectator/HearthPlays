@@ -23,11 +23,12 @@
 ///<reference path="lib/qunit"/>
 ///<reference path="../src/replay"/>
 ///<reference path="../src/replayParser"/>
+///<reference path="../src/events/createGame"/>
 ///<reference path="../src/logLine"/>
 
 namespace HearthPlaysTest {
     export class ReplayParserTest {
-        
+
         public static fileStart: string = `D 22:39:31.1128743 GameState.DebugPrintPower() - CREATE_GAME
 D 22:39:31.1128743 GameState.DebugPrintPower() -     GameEntity EntityID=1
 D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=10 value=85
@@ -68,8 +69,9 @@ D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=ENTITY_ID value=3
 D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=MAXRESOURCES value=10
 D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=CARDTYPE value=PLAYER
 D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_TURNS_LEFT value=1
-D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THIS_TURN value=4`;
-        
+D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THIS_TURN value=4
+`;
+
         public static run() {
             QUnit.module("Parser : Assignations");
             QUnit.test("Mono values only", function(assert) {
@@ -113,9 +115,9 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THI
                 tests.push(new TestCase("ARRAY[2ID2]=-42", { "ARRAY": { "2ID2": -42 } }));
                 tests.push(new TestCase("ARRAY[2]=2 ARRAY[3]=-3", { "ARRAY": { "2": 2, "3": -3 } }));
                 tests.push(new TestCase("ARRAY[5]= ARRAY[6]=-3", { "ARRAY": { "6": -3 } }));
-                tests.push(new TestCase("12[5]=0 12[6]=-3 13[6]=13", { "12": { "5": 0, "6": -3 }, "13": {"6": 13} }));
+                tests.push(new TestCase("12[5]=0 12[6]=-3 13[6]=13", { "12": { "5": 0, "6": -3 }, "13": { "6": 13 } }));
                 tests.push(new TestCase("ID[-DECK]=ENTITY ID[DECK]=ID ID[ID]=DECK DECK[ENTITY]=-0",
-                    { "ID": { "-DECK": "ENTITY", "DECK": "ID", "ID": "DECK"}, "DECK": {"ENTITY": 0} }));
+                    { "ID": { "-DECK": "ENTITY", "DECK": "ID", "ID": "DECK" }, "DECK": { "ENTITY": 0 } }));
                 for (var idx in tests) {
                     var test = tests[idx];
                     var result = HearthPlays.ReplayParser.readAssignations(test.argument);
@@ -123,7 +125,7 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THI
                     assert.deepEqual(result, test.expected, message);
                 }
             });
-           
+
             QUnit.test("Array in value", function(assert) {
                 var tests: Array<TestCase> = new Array<TestCase>();
                 tests.push(new TestCase("ARRAY=[first=1]", { "ARRAY": { "first": 1 } }));
@@ -132,13 +134,13 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THI
                 tests.push(new TestCase("ENTITY=[4=-7]", { "ENTITY": { "4": -7 } }));
                 tests.push(new TestCase("ENTITY=[-2=-0]", { "ENTITY": { "-2": 0 } }));
                 tests.push(new TestCase("-2=[ENTITY=01LIFE]", { "-2": { "ENTITY": 1 } }));
-                tests.push(new TestCase("ENTITY=[ENTITY=]", { "ENTITY": { } }));
+                tests.push(new TestCase("ENTITY=[ENTITY=]", { "ENTITY": {} }));
                 tests.push(new TestCase("ENTITY=[01=LIFE01]", { "ENTITY": { "01": "LIFE01" } }));
                 tests.push(new TestCase("ENTITY=[01=LIFE01 2=TEST]", { "ENTITY": { "01": "LIFE01", "2": "TEST" } }));
                 tests.push(new TestCase("ENTITY=[HEALTH=15 ATTACK=-15 -15ATTACK=]",
-                { "ENTITY": { "HEALTH": 15, "ATTACK": -15 } }));
+                    { "ENTITY": { "HEALTH": 15, "ATTACK": -15 } }));
                 tests.push(new TestCase("ENTITY=[HEALTH=-0 0= 12=2 -9=ATTACK]",
-                { "ENTITY": { "HEALTH": 0, "12": 2, "-9": "ATTACK" } }));
+                    { "ENTITY": { "HEALTH": 0, "12": 2, "-9": "ATTACK" } }));
                 for (var idx in tests) {
                     var test = tests[idx];
                     var result = HearthPlays.ReplayParser.readAssignations(test.argument);
@@ -146,21 +148,21 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THI
                     assert.deepEqual(result, test.expected, message);
                 }
             });
-            
+
             QUnit.test("Array in both key and value", function(assert) {
                 var tests: Array<TestCase> = new Array<TestCase>();
-                tests.push(new TestCase("ENTITY[0]=[HEALTH=2]", { "ENTITY": { "0": {"HEALTH": 2} } }));
-                tests.push(new TestCase("ENTITY[ID]=[HEALTH=0 ATTACK=-3]", { "ENTITY": { "ID": {"HEALTH": 0, "ATTACK": -3} } }));
-                tests.push(new TestCase("ENTITY[-2]=[03=03 -4=LIFE LIFE= TEST= TAG=TAG]", { "ENTITY": { "-2": {"03": 3, "-4": "LIFE", "TAG": "TAG"} } }));
-                tests.push(new TestCase("ENTITY[1]=[HEALTH=2 ENTITY=-0]", { "ENTITY": { "1": {"HEALTH": 2, "ENTITY":0} } }));
-                tests.push(new TestCase("ENTITY[013LIFE]=[HEALTH=2L ATTACK=]", { "ENTITY": { "013LIFE": {"HEALTH": 2} } }));
-                tests.push(new TestCase("ENTITY[2]=[HEALTH=L3]", { "ENTITY": { "2": {"HEALTH": "L3"} } }));
+                tests.push(new TestCase("ENTITY[0]=[HEALTH=2]", { "ENTITY": { "0": { "HEALTH": 2 } } }));
+                tests.push(new TestCase("ENTITY[ID]=[HEALTH=0 ATTACK=-3]", { "ENTITY": { "ID": { "HEALTH": 0, "ATTACK": -3 } } }));
+                tests.push(new TestCase("ENTITY[-2]=[03=03 -4=LIFE LIFE= TEST= TAG=TAG]", { "ENTITY": { "-2": { "03": 3, "-4": "LIFE", "TAG": "TAG" } } }));
+                tests.push(new TestCase("ENTITY[1]=[HEALTH=2 ENTITY=-0]", { "ENTITY": { "1": { "HEALTH": 2, "ENTITY": 0 } } }));
+                tests.push(new TestCase("ENTITY[013LIFE]=[HEALTH=2L ATTACK=]", { "ENTITY": { "013LIFE": { "HEALTH": 2 } } }));
+                tests.push(new TestCase("ENTITY[2]=[HEALTH=L3]", { "ENTITY": { "2": { "HEALTH": "L3" } } }));
                 tests.push(new TestCase("ENTITY[0]=[HEALTH=2] ENTITY[0]=[ATTACK=3] ENTITY[0]=[COST=HEALTH]",
-                { "ENTITY": { "0": {"HEALTH": 2, "ATTACK": 3, "COST": "HEALTH"} } }));
+                    { "ENTITY": { "0": { "HEALTH": 2, "ATTACK": 3, "COST": "HEALTH" } } }));
                 tests.push(new TestCase("ENTITY[0]=[HEALTH=2 ATTACK=12] ENTITY[1]=[ATTACK=3] ENTITY[TEST]=23",
-                { "ENTITY": { "0": {"HEALTH": 2, "ATTACK": 12}, "1": {"ATTACK": 3}, "TEST": 23 } }));
+                    { "ENTITY": { "0": { "HEALTH": 2, "ATTACK": 12 }, "1": { "ATTACK": 3 }, "TEST": 23 } }));
                 tests.push(new TestCase("ENTITY[0]=[ENTITY=2] ENTITY[1]=[ATTACK=ATTACK] TEST[1]=[ENTITY=TEST TEST= TEST=-1 TEST=]",
-                { "ENTITY": { "0": {"ENTITY": 2}, "1": {"ATTACK": "ATTACK"} }, "TEST": {"1": {"ENTITY": "TEST", "TEST": -1}} }));
+                    { "ENTITY": { "0": { "ENTITY": 2 }, "1": { "ATTACK": "ATTACK" } }, "TEST": { "1": { "ENTITY": "TEST", "TEST": -1 } } }));
                 for (var idx in tests) {
                     var test = tests[idx];
                     var result = HearthPlays.ReplayParser.readAssignations(test.argument);
@@ -168,31 +170,106 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THI
                     assert.deepEqual(result, test.expected, message);
                 }
             });
-            
-            
+
+
             QUnit.module("Parser : CREATE_GAME");
             QUnit.test("Parsing GameEntity", function(assert) {
                 var tests: Array<TestCase> = new Array<TestCase>();
-                tests.push(new TestCase(ReplayParserTest.fileStart, 85));
+                
+                // Parsing string : ReplayParserTest.fileStart
+                var parser = new HearthPlays.ReplayParser();
+                var input = ReplayParserTest.fileStart;
+                var createGame = <HearthPlays.CreateGame>parser.parse(input).getTimeline()[0];
+                tests.push(
+                    new TestCase(
+                        createGame,
+                        85,
+                        "In first CREATE_GAME, GameEntity's tag \"10\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).gameEntity.getTag("10")
+                    ),
+                    new TestCase(
+                        createGame,
+                        1,
+                        "In first CREATE_GAME, GameEntity's \"EntityID\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).gameEntity.entityID
+                    ),
+                    new TestCase(
+                        createGame,
+                        "RUNNING",
+                        "In first CREATE_GAME, GameEntity's tag \"STATE\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).gameEntity.getTag("STATE")
+                    ),
+                    new TestCase(
+                        createGame,
+                        2,
+                        "In first CREATE_GAME, first Player's \"EntityID\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).players[0].entityID
+                    ),
+                    new TestCase(
+                        createGame,
+                        1,
+                        "In first CREATE_GAME, first Player's \"PlayerID\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).players[0].playerID
+                    ),
+                    new TestCase(
+                        createGame,
+                        {"hi" : 144115198130930503, "lo" : 29361374},
+                        "In first CREATE_GAME, first Player's \"GameAccountId\" is : {\"hi\" : 144115198130930503, \"lo\" : 29361374}",
+                        (param) => (<HearthPlays.CreateGame>param).players[0].gameAccountId
+                    ),
+                    new TestCase(
+                        createGame,
+                        "PLAYING",
+                        "In first CREATE_GAME, first Player's tag \"PLAYSTATE\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).players[0].getTag("PLAYSTATE")
+                    ),
+                    new TestCase(
+                        createGame,
+                        75,
+                        "In first CREATE_GAME, first Player's tag \"TIMEOUT\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).players[0].getTag("TIMEOUT")
+                    ),
+                    new TestCase(
+                        createGame,
+                        3,
+                        "In first CREATE_GAME, first Player's tag \"NUM_CARDS_DRAWN_THIS_TURN\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).players[0].getTag("NUM_CARDS_DRAWN_THIS_TURN")
+                    ),
+                    new TestCase(
+                        createGame,
+                        3,
+                        "In first CREATE_GAME, second Player's \"EntityID\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).players[1].entityID
+                    ),
+                    new TestCase(
+                        createGame,
+                        2,
+                        "In first CREATE_GAME, second Player's \"PlayerID\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).players[1].playerID
+                    )
+                );
                 for (var idx in tests) {
                     var test = tests[idx];
-                    var parser = new HearthPlays.ReplayParser();
-                    var result = (<HearthPlays.CreateGame>parser.parse(test.argument).getTimeline()[0]).gameEntity.getTag("10");
-                    var message = "In first CREATE_GAME, GameEntity's tag \"10\" is '" + test.expected;
+                    var result = test.callback(createGame);
+                    var message = test.message + test.expected;
                     assert.deepEqual(result, test.expected, message);
                 }
             });
-            
+
         }
     }
 
     class TestCase {
         public argument: any;
         public expected: any;
+        public message: string;
+        public callback: (any?) => any;
 
-        constructor(argument: any, expected: any) {
+        constructor(argument: any, expected: any, message?: string, callback?: (any?) => any) {
             this.argument = argument;
             this.expected = expected;
+            this.message = message;
+            this.callback = callback;
         }
     }
 }
