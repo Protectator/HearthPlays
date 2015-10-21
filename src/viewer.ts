@@ -22,7 +22,7 @@
 
 ///<reference path="../lib/pixijs/pixi.js.d.ts"/>
 ///<reference path="../lib/jszip/jszip.d.ts"/>
-///<reference path="replayParser.ts"/>
+///<reference path="parser/replayParser.ts"/>
 ///<reference path="replay.ts"/>
 
 // For Typescript to stop complaining about "moz" and "ms" not existing

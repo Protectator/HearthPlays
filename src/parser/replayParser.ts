@@ -20,41 +20,51 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
-///<reference path="replay.ts"/>
+///<reference path="../replay.ts"/>
 ///<reference path="logLine.ts"/>
 ///<reference path="logLineType.ts"/>
 ///<reference path="logLineMethod.ts"/>
-///<reference path="entities/tags.ts"/>
-///<reference path="replayEvent.ts"/>
-///<reference path="events/createGame.ts"/>
-///<reference path="events/fullEntity.ts"/>
-///<reference path="events/action.ts"/>
-///<reference path="events/showEntity.ts"/>
-///<reference path="events/hideEntity.ts"/>
-///<reference path="events/tagChange.ts"/>
+///<reference path="../entities/tags.ts"/>
+///<reference path="../replayEvent.ts"/>
+///<reference path="../events/createGame.ts"/>
+///<reference path="../events/fullEntity.ts"/>
+///<reference path="../events/action.ts"/>
+///<reference path="../events/showEntity.ts"/>
+///<reference path="../events/hideEntity.ts"/>
+///<reference path="../events/tagChange.ts"/>
 
 namespace HearthPlays {
+
     export class ReplayParser {
         
         // Parser data
         private lines: LogLine[];
         private events: ReplayEvent[];
-        
         // Parser state
         private currentLineNumber: number;
-        
         // Parser's current replay
         private progressingReplay: Replay;
-
+        // Gets the current line to be parsed
         private get currentLine(): LogLine {
             if (this.currentLineNumber == this.lines.length) {
                 return new LogLine(""); // Return a last line
             }
             return this.lines[this.currentLineNumber];
         }
-
+        // Expected number of remaining incoming "DebugPowerPrint" log lines.
         private expectedPP: number;
+        
+        /////////////
+        //         //
+        // GENERIC //
+        //         //
+        /////////////
 
+        /**
+         * Creates a Replay object from a complete game's logs.
+         * @param logs Contains the whole logs of a game
+         * @returns    Represents all the replay's actions
+         */
         public parse(logs: string): Replay {
             this.progressingReplay = new Replay();
             var content: string[] = logs.split("\n");
@@ -79,6 +89,10 @@ namespace HearthPlays {
             return this.progressingReplay;
         }
 
+
+        /**
+         * Parses a first-level event line and goes to the next.
+         */
         private parseFirstLevelLine(): void {
             var line = this.currentLine;
             switch (line.method) {
@@ -155,7 +169,7 @@ namespace HearthPlays {
                     //this.parseSendOption();
                     this.nextLine();
                     break;
-                    
+
                 case LogLineMethod.lastLine:
                     this.nextLine();
                     return;
@@ -166,100 +180,148 @@ namespace HearthPlays {
             }
         }
 
+        /**
+         * Moves the line reference to the next line.
+         * @returns The line to be parsed.
+         */
+        private nextLine(): LogLine {
+            this.currentLineNumber++;
+            if (this.currentLineNumber >= this.lines.length) {
+                this.currentLineNumber = this.lines.length;
+            }
+            return this.currentLine;
+        }
+        
+        /////////////////
+        ///// Event /////
+        // CREATE_GAME //
+        /////////////////
+        /////////////////
+
+        /**
+         * Parses a complete first-level CREATE_GAME event.
+         * @returns Event containing all the parsed informations
+         */
         private parseCreateGame(): CreateGame {
-            // TODO : Actually add the event to the replay
             // Creating the event we'll return
             var event: CreateGame = new CreateGame();
             // Checking if we're on the correct line
             if (this.currentLine.type != LogLineType.CREATE_GAME) {
                 throw new Error("Tried to parse wrong event");
             }
-            var line = this.nextLine();
+            this.nextLine();
             // Adding all meta information
-            while (line.type == LogLineType.meta) {
-                var words = line.print.split(" ");
+            while (this.currentLine.type == LogLineType.meta) {
+                var words = this.currentLine.print.split(" ");
                 
                 // Parsing the "GameEntity" part
                 if (words[0] == "GameEntity") {
-                    var assignations = ReplayParser.readAssignations(line.print);
-                    event.gameEntity = new GameEntity(<number>assignations.EntityID);
-
-                    var parentIndentation = line.indentation;
-                    line = this.nextLine();
-                    
-                    // Getting all tag values in it
-                    while (line.indentation > parentIndentation) {
-                        assignations = ReplayParser.readAssignations(line.print);
-                        var tagKey: string;
-                        var tagValue: string|number;
-                        for (var assignationKey in assignations) {
-                            var assignationValue = assignations[assignationKey];
-                            if (assignationKey == "tag") {
-                                tagKey = assignationValue;
-                            } else if (assignationKey == "value") {
-                                tagValue = assignationValue;
-                            } else {
-                                console.log("Unrecognized assignation in GameEntity : " + assignationKey);
-                            }
-                        }
-                        event.gameEntity.setTag(tagKey, tagValue);
-                        console.log("Set tag " + tagKey + " to " + tagValue);
-                        line = this.nextLine();
-                    }
-                    console.log(event.gameEntity);
-                    
+                    event.gameEntity = this.parseCreateGame_GameEntity();
                 } else if (words[0] == "Player") {
-                    var assignations = ReplayParser.readAssignations(line.print);
-                    var entityID: number;
-                    var playerID: number;
-                    var gameAccountId;
-                    for (var assignationKey in assignations) {
-                        var assignationValue = assignations[assignationKey];
-                        switch (assignationKey) {
-                            case "EntityID":
-                                entityID = assignationValue;
-                                break;
-                            case "PlayerID":
-                                playerID = assignationValue;
-                                break;
-                            case "GameAccountId":
-                                gameAccountId = assignationValue;
-                                break;
-                            default:
-                                console.log("Unrecognized assignation in GameEntity : " + assignationKey);
-                        }
-                    }
-                    var player = new Player(playerID, entityID, gameAccountId);
-
-                    var parentIndentation = line.indentation;
-                    line = this.nextLine();
-                    
-                    // Getting all tag values in it
-                    while (line.indentation > parentIndentation) {
-                        assignations = ReplayParser.readAssignations(line.print);
-                        var tagKey: string;
-                        var tagValue: string|number;
-                        for (var assignationKey in assignations) {
-                            var assignationValue = assignations[assignationKey];
-                            if (assignationKey == "tag") {
-                                tagKey = assignationValue;
-                            } else if (assignationKey == "value") {
-                                tagValue = assignationValue;
-                            } else {
-                                console.log("Unrecognized assignation in Player : " + assignationKey);
-                            }
-                        }
-                        player.setTag(tagKey, tagValue);
-                        line = this.nextLine();
-                    }
-                    event.players.push(player);
+                    event.players.push(this.parseCreateGame_Player());
                 }
             }
             return event;
         }
+
+        /**
+         * Parses the GameEntity part in a CREATE_GAME event.
+         */
+        private parseCreateGame_GameEntity(): GameEntity {
+            var line = this.currentLine;
+            var assignations = ReplayParser.readAssignations(line.print);
+            var gameEntity = new GameEntity(<number>assignations.EntityID);
+
+            var parentIndentation = line.indentation;
+            line = this.nextLine();
+                    
+            // Getting all tag values in it
+            while (line.indentation > parentIndentation) {
+                assignations = ReplayParser.readAssignations(line.print);
+                var tagKey: string;
+                var tagValue: string | number;
+                for (var assignationKey in assignations) {
+                    var assignationValue = assignations[assignationKey];
+                    if (assignationKey == "tag") {
+                        tagKey = assignationValue;
+                    } else if (assignationKey == "value") {
+                        tagValue = assignationValue;
+                    } else {
+                        console.log("Unrecognized assignation in GameEntity : " + assignationKey);
+                    }
+                }
+                gameEntity.setTag(tagKey, tagValue);
+                line = this.nextLine();
+            }
+            return gameEntity;
+        }
+
+        /**
+         * Parses a Player part in a CREATE_GAME event.
+         */
+        private parseCreateGame_Player(): Player {
+            var assignations = ReplayParser.readAssignations(this.currentLine.print);
+            var entityID: number;
+            var playerID: number;
+            var gameAccountId;
+            for (var assignationKey in assignations) {
+                var assignationValue = assignations[assignationKey];
+                switch (assignationKey) {
+                    case "EntityID":
+                        entityID = assignationValue;
+                        break;
+                    case "PlayerID":
+                        playerID = assignationValue;
+                        break;
+                    case "GameAccountId":
+                        gameAccountId = assignationValue;
+                        break;
+                    default:
+                        console.log("Unrecognized assignation in Player : " + assignationKey);
+                }
+            }
+            var player = new Player(playerID, entityID, gameAccountId);
+
+            var parentIndentation = this.currentLine.indentation;
+            this.nextLine();
+                    
+            // Getting all tag values in it
+            while (this.currentLine.indentation > parentIndentation) {
+                assignations = ReplayParser.readAssignations(this.currentLine.print);
+                var tagKey: string;
+                var tagValue: string | number;
+                for (var assignationKey in assignations) {
+                    var assignationValue = assignations[assignationKey];
+                    if (assignationKey == "tag") {
+                        tagKey = assignationValue;
+                    } else if (assignationKey == "value") {
+                        tagValue = assignationValue;
+                    } else {
+                        console.log("Unrecognized assignation in Player : " + assignationKey);
+                    }
+                }
+                player.setTag(tagKey, tagValue);
+                this.nextLine();
+            }
+            return player;
+        }
+        
+        /////////////////
+        ///// Event /////
+        // FULL_ENTITY //
+        /////////////////
+        /////////////////
+        
+        // TODO
+        
+        /////////////
+        // UTILITY //
+        /////////////
         
         /**
          * Used to read a line containing assignations like "HEALTH=3 SOMETHING=[hi=2 low=4]"
+         * @param line Contains only the assignations part of a line.
+         * @return     Object containing left part of assignations as keys and right parts as values.
          */
         public static readAssignations(line: string): any {
             var findAssignations: RegExp = /(\S*?(?:\[\S+\])?)=(\[.*?\]|\S+)/g;
@@ -314,7 +376,7 @@ namespace HearthPlays {
             return result;
         }
 
-        private static tryParseInt(value: string): (string|number) {
+        private static tryParseInt(value: string): (string | number) {
             return isNaN(parseInt(value)) ? value : parseInt(value);
         }
 
@@ -357,13 +419,6 @@ namespace HearthPlays {
             this.nextLine();
         }
 
-        private nextLine(): LogLine {
-            this.currentLineNumber++;
-            if (this.currentLineNumber >= this.lines.length) {
-                this.currentLineNumber = this.lines.length;
-            }
-            return this.currentLine;
-        }
     }
 
 }

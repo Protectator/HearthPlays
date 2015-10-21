@@ -22,9 +22,9 @@
 
 ///<reference path="lib/qunit"/>
 ///<reference path="../src/replay"/>
-///<reference path="../src/replayParser"/>
+///<reference path="../src/parser/replayParser"/>
 ///<reference path="../src/events/createGame"/>
-///<reference path="../src/logLine"/>
+///<reference path="../src/parser/logLine"/>
 
 namespace HearthPlaysTest {
     export class ReplayParserTest {
@@ -213,7 +213,7 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THI
                     ),
                     new TestCase(
                         createGame,
-                        {"hi" : 144115198130930503, "lo" : 29361374},
+                        { "hi": 144115198130930503, "lo": 29361374 },
                         "In first CREATE_GAME, first Player's \"GameAccountId\" is : {\"hi\" : 144115198130930503, \"lo\" : 29361374}",
                         (param) => (<HearthPlays.CreateGame>param).players[0].gameAccountId
                     ),
@@ -246,6 +246,30 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THI
                         2,
                         "In first CREATE_GAME, second Player's \"PlayerID\" is ",
                         (param) => (<HearthPlays.CreateGame>param).players[1].playerID
+                    ),
+                    new TestCase(
+                        createGame,
+                        { "hi": 144115198130930503, "lo": 20236080 },
+                        "In first CREATE_GAME, second Player's \"GameAccountId\" is : {\"hi\" : 144115198130930503, \"lo\" : 20236080}",
+                        (param) => (<HearthPlays.CreateGame>param).players[1].gameAccountId
+                    ),
+                    new TestCase(
+                        createGame,
+                        "PLAYING",
+                        "In first CREATE_GAME, second Player's tag \"PLAYSTATE\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).players[1].getTag("PLAYSTATE")
+                    ),
+                    new TestCase(
+                        createGame,
+                        75,
+                        "In first CREATE_GAME, second Player's tag \"TIMEOUT\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).players[1].getTag("TIMEOUT")
+                    ),
+                    new TestCase(
+                        createGame,
+                        4,
+                        "In first CREATE_GAME, second Player's tag \"NUM_CARDS_DRAWN_THIS_TURN\" is ",
+                        (param) => (<HearthPlays.CreateGame>param).players[1].getTag("NUM_CARDS_DRAWN_THIS_TURN")
                     )
                 );
                 for (var idx in tests) {
