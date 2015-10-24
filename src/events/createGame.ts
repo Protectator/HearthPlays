@@ -1,4 +1,3 @@
-
 /*	This file is part of HearthPlays.
 
     HearthPlays - Web Hearthstone replays viewer

@@ -102,9 +102,7 @@ namespace HearthPlays {
                             this.progressingReplay.addEvent(this.parseCreateGame());
                             break;
                         case LogLineType.FULL_ENTITY:
-                            // TODO : Implement correctly
-                            //this.parseFullEntity();
-                            this.nextLine();
+                            this.progressingReplay.addEvent(this.parseFullEntity());
                             break;
                         case LogLineType.ACTION_START:
                             // TODO : Implement correctly
@@ -312,7 +310,56 @@ namespace HearthPlays {
         /////////////////
         /////////////////
         
-        // TODO
+        /**
+         * Parses a complete first-level CREATE_GAME event.
+         * @returns Event containing all the parsed informations
+         */
+        private parseFullEntity(): FullEntity {
+            // Creating the event we'll return
+            var event: FullEntity = new FullEntity();
+            // Checking if we're on the correct line
+            if (this.currentLine.type != LogLineType.FULL_ENTITY) {
+                throw new Error("Tried to parse wrong event");
+            }
+            var id: number;
+            var cardID: number;
+            var assignations = ReplayParser.readAssignations(this.currentLine.print);
+            for (var assignationKey in assignations) {
+                var assignationValue = assignations[assignationKey];
+                switch (assignationKey) {
+                    case "ID":
+                        event.id = assignationValue;
+                        break;
+                    case "CardID":
+                        event.cardId = assignationValue;
+                        break;
+                    default:
+                        console.log("Unrecognized assignation in FULL_ENTITY's declaration : " + assignationKey);
+                }
+            }
+            var parentIndentation = this.currentLine.indentation;
+            this.nextLine();
+            
+            // Getting all tag values in it
+            while (this.currentLine.indentation > parentIndentation) {
+                assignations = ReplayParser.readAssignations(this.currentLine.print);
+                var tagKey: string;
+                var tagValue: string | number;
+                for (var assignationKey in assignations) {
+                    var assignationValue = assignations[assignationKey];
+                    if (assignationKey == "tag") {
+                        tagKey = assignationValue;
+                    } else if (assignationKey == "value") {
+                        tagValue = assignationValue;
+                    } else {
+                        console.log("Unrecognized assignation in FULL_ENTITY : " + assignationKey);
+                    }
+                }
+                event.entity.setTag(tagKey, tagValue);
+                this.nextLine();
+            }
+            return event;
+        }
         
         /////////////
         // UTILITY //
@@ -378,12 +425,6 @@ namespace HearthPlays {
 
         private static tryParseInt(value: string): (string | number) {
             return isNaN(parseInt(value)) ? value : parseInt(value);
-        }
-
-        private parseFullEntity(): void {
-
-            var event = new FullEntity();
-            // TODO
         }
 
         private parseAction(): void {

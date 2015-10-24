@@ -20,7 +20,6 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
-
 namespace HearthPlays {
 	export class Tag {
 		public key: string;

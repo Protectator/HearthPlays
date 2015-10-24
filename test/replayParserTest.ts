@@ -29,7 +29,7 @@
 namespace HearthPlaysTest {
     export class ReplayParserTest {
 
-        public static fileStart: string = `D 22:39:31.1128743 GameState.DebugPrintPower() - CREATE_GAME
+        public static createGameString: string = `D 22:39:31.1128743 GameState.DebugPrintPower() - CREATE_GAME
 D 22:39:31.1128743 GameState.DebugPrintPower() -     GameEntity EntityID=1
 D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=10 value=85
 D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=TURN value=1
@@ -70,6 +70,30 @@ D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=MAXRESOURCES value=
 D 22:39:31.1128743 GameState.DebugPrintPower() -         tag=CARDTYPE value=PLAYER
 D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_TURNS_LEFT value=1
 D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THIS_TURN value=4
+`;
+
+        public static fullEntityString: string = `D 22:39:31.1138745 GameState.DebugPrintPower() - FULL_ENTITY - Creating ID=5 CardID=CS2_101
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=COST value=2
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ZONE value=PLAY
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=CONTROLLER value=1
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ENTITY_ID value=5
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=FACTION value=NEUTRAL
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=CARDTYPE value=HERO_POWER
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=RARITY value=FREE
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=CREATOR value=4
+D 22:39:31.1138745 GameState.DebugPrintPower() - FULL_ENTITY - Creating ID=6 CardID=EX1_032
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=HEALTH value=5
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ATK value=4
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=COST value=6
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ZONE value=HAND
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=CONTROLLER value=1
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ENTITY_ID value=6
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=TAUNT value=1
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=DIVINE_SHIELD value=1
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=FACTION value=ALLIANCE
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=CARDTYPE value=MINION
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=RARITY value=RARE
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ZONE_POSITION value=3
 `;
 
         public static run() {
@@ -178,7 +202,7 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THI
                 
                 // Parsing string : ReplayParserTest.fileStart
                 var parser = new HearthPlays.ReplayParser();
-                var input = ReplayParserTest.fileStart;
+                var input = ReplayParserTest.createGameString;
                 var createGame = <HearthPlays.CreateGame>parser.parse(input).getTimeline()[0];
                 tests.push(
                     new TestCase(
@@ -275,6 +299,55 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -         tag=NUM_CARDS_DRAWN_THI
                 for (var idx in tests) {
                     var test = tests[idx];
                     var result = test.callback(createGame);
+                    var message = test.message + test.expected;
+                    assert.deepEqual(result, test.expected, message);
+                }
+            });
+
+
+            QUnit.module("Parser : FULL_ENTITY");
+            QUnit.test("Parsing GameEntity", function(assert) {
+                var tests: Array<TestCase> = new Array<TestCase>();
+                
+                // Parsing string : ReplayParserTest.fileStart
+                var parser = new HearthPlays.ReplayParser();
+                var input = ReplayParserTest.fullEntityString;
+                var fullEntity = <HearthPlays.FullEntity>parser.parse(input).getTimeline()[0];
+                tests.push(
+                    new TestCase(
+                        fullEntity,
+                        5,
+                        "In first FULL_ENTITY, ID is ",
+                        (param) => (<HearthPlays.FullEntity>param).id
+                    ),
+                    new TestCase(
+                        fullEntity,
+                        "CS2_101",
+                        "In first FULL_ENTITY, CardID is ",
+                        (param) => (<HearthPlays.FullEntity>param).cardId
+                    ),
+                    new TestCase(
+                        fullEntity,
+                        2,
+                        "In first FULL_ENTITY, entity's tag \"COST\" is ",
+                        (param) => (<HearthPlays.FullEntity>param).entity.getTag("COST")
+                    ),
+                    new TestCase(
+                        fullEntity,
+                        "NEUTRAL",
+                        "In first FULL_ENTITY, entity's tag \"FACTION\" is ",
+                        (param) => (<HearthPlays.FullEntity>param).entity.getTag("FACTION")
+                    ),
+                    new TestCase(
+                        fullEntity,
+                        4,
+                        "In first FULL_ENTITY, entity's tag \"CREATOR\" is ",
+                        (param) => (<HearthPlays.FullEntity>param).entity.getTag("CREATOR")
+                    )
+                );
+                for (var idx in tests) {
+                    var test = tests[idx];
+                    var result = test.callback(fullEntity);
                     var message = test.message + test.expected;
                     assert.deepEqual(result, test.expected, message);
                 }

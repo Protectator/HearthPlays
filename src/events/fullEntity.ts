@@ -23,9 +23,14 @@
 ///<reference path="../replayEvent.ts"/>
 
 namespace HearthPlays {
-	export class FullEntity implements ReplayEvent {
+    export class FullEntity implements ReplayEvent {
+
+        public id: number;
+        public cardId: number;
+        public entity: Entity;
+
         constructor() {
-            // TODO
+            this.entity = new Entity();
         }
     }
 }
