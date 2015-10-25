@@ -230,28 +230,12 @@ namespace HearthPlays {
             var line = this.currentLine;
             var assignations = ReplayParser.readAssignations(line.print);
             var gameEntity = new GameEntity(<number>assignations.EntityID);
-
-            var parentIndentation = line.indentation;
-            line = this.nextLine();
                     
             // Getting all tag values in it
-            while (line.indentation > parentIndentation) {
-                assignations = ReplayParser.readAssignations(line.print);
-                var tagKey: string;
-                var tagValue: string | number;
-                for (var assignationKey in assignations) {
-                    var assignationValue = assignations[assignationKey];
-                    if (assignationKey == "tag") {
-                        tagKey = assignationValue;
-                    } else if (assignationKey == "value") {
-                        tagValue = assignationValue;
-                    } else {
-                        console.log("Unrecognized assignation in GameEntity : " + assignationKey);
-                    }
-                }
-                gameEntity.setTag(tagKey, tagValue);
-                line = this.nextLine();
-            }
+            var parentIndentation = line.indentation;
+            this.nextLine();
+            this.parseAllMetaTags(gameEntity, parentIndentation);
+
             return gameEntity;
         }
 
@@ -280,28 +264,12 @@ namespace HearthPlays {
                 }
             }
             var player = new Player(playerID, entityID, gameAccountId);
-
-            var parentIndentation = this.currentLine.indentation;
-            this.nextLine();
                     
             // Getting all tag values in it
-            while (this.currentLine.indentation > parentIndentation) {
-                assignations = ReplayParser.readAssignations(this.currentLine.print);
-                var tagKey: string;
-                var tagValue: string | number;
-                for (var assignationKey in assignations) {
-                    var assignationValue = assignations[assignationKey];
-                    if (assignationKey == "tag") {
-                        tagKey = assignationValue;
-                    } else if (assignationKey == "value") {
-                        tagValue = assignationValue;
-                    } else {
-                        console.log("Unrecognized assignation in Player : " + assignationKey);
-                    }
-                }
-                player.setTag(tagKey, tagValue);
-                this.nextLine();
-            }
+            var parentIndentation = this.currentLine.indentation;
+            this.nextLine();
+            this.parseAllMetaTags(player, parentIndentation);
+
             return player;
         }
         
@@ -338,27 +306,12 @@ namespace HearthPlays {
                         console.log("Unrecognized assignation in FULL_ENTITY's declaration : " + assignationKey);
                 }
             }
-            var parentIndentation = this.currentLine.indentation;
-            this.nextLine();
             
             // Getting all tag values in it
-            while (this.currentLine.indentation > parentIndentation) {
-                assignations = ReplayParser.readAssignations(this.currentLine.print);
-                var tagKey: string;
-                var tagValue: string | number;
-                for (var assignationKey in assignations) {
-                    var assignationValue = assignations[assignationKey];
-                    if (assignationKey == "tag") {
-                        tagKey = assignationValue;
-                    } else if (assignationKey == "value") {
-                        tagValue = assignationValue;
-                    } else {
-                        console.log("Unrecognized assignation in FULL_ENTITY : " + assignationKey);
-                    }
-                }
-                event.entity.setTag(tagKey, tagValue);
-                this.nextLine();
-            }
+            var parentIndentation = this.currentLine.indentation;
+            this.nextLine();
+            this.parseAllMetaTags(event.entity, parentIndentation);
+
             return event;
         }
         
@@ -426,6 +379,32 @@ namespace HearthPlays {
 
         private static tryParseInt(value: string): (string | number) {
             return isNaN(parseInt(value)) ? value : parseInt(value);
+        }
+        
+        /**
+         * Parses all the meta tags on multiple lines and add them to an entity.
+         * @param entity            Entity to which add parsed tags
+         * @param parentIndentation Number of indentations of the event's declaration
+         */
+        private parseAllMetaTags(entity: Entity, parentIndentation: number): void {
+            var assignations: any = new Array();
+            while (this.currentLine.indentation > parentIndentation) {
+                assignations = ReplayParser.readAssignations(this.currentLine.print);
+                var tagKey: string;
+                var tagValue: string | number;
+                for (var assignationKey in assignations) {
+                    var assignationValue = assignations[assignationKey];
+                    if (assignationKey == "tag") {
+                        tagKey = assignationValue;
+                    } else if (assignationKey == "value") {
+                        tagValue = assignationValue;
+                    } else {
+                        console.log("Unrecognized assignation (Not a tag/value assignation) : " + assignationKey);
+                    }
+                }
+                entity.setTag(tagKey, tagValue);
+                this.nextLine();
+            }
         }
 
         private parseAction(): void {
