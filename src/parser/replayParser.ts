@@ -113,9 +113,7 @@ namespace HearthPlays {
                             throw new Error("Misplaced ACTION_END");
                             break;
                         case LogLineType.TAG_CHANGE:
-                            // TODO : Implement correctly
-                            //this.parseTagChange();
-                            this.nextLine();
+                            this.progressingReplay.addEvent(this.parseTagChange());
                             break;
                         case LogLineType.SHOW_ENTITY:
                             // TODO : Implement correctly
@@ -315,6 +313,37 @@ namespace HearthPlays {
             return event;
         }
         
+        ////////////////
+        //// Event /////
+        // TAG_CHANGE //
+        ////////////////
+        ////////////////
+        
+        private parseTagChange(): TagChange {
+            // Creating the event we'll return
+            var event = new TagChange();
+            var assignations = ReplayParser.readAssignations(this.currentLine.print);
+            for (var assignationKey in assignations) {
+                var assignationValue = assignations[assignationKey];
+                switch (assignationKey) {
+                    case "Entity":
+                        event.entity = assignationValue;
+                        break;
+                    case "tag":
+                        event.tag = assignationValue;
+                        break;
+                    case "value":
+                        event.value = assignationValue;
+                        break;
+                    default:
+                        console.log("Unrecognized assignation in TAG_CHANGE : " + assignationKey);
+                }
+            }
+            this.nextLine();
+
+            return event;
+        }
+        
         /////////////
         // UTILITY //
         /////////////
@@ -410,12 +439,6 @@ namespace HearthPlays {
         private parseAction(): void {
 
             var event = new Action();
-            // TODO
-        }
-
-        private parseTagChange(): void {
-
-            var event = new TagChange();
             // TODO
         }
 

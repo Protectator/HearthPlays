@@ -103,6 +103,42 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=CANT_PLAY value=0
 D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=REVEALED value=0
 `;
 
+        public static tagChangeString: string = `D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=TIMEOUT value=75
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=PLAYSTATE value=PLAYING
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=HERO_ENTITY value=36
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=MAXHANDSIZE value=10
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=STARTHANDSIZE value=4
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=PLAYER_ID value=2
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=TEAM_ID value=2
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=ZONE value=PLAY
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=CONTROLLER value=2
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=ENTITY_ID value=3
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=MAXRESOURCES value=10
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=CARDTYPE value=PLAYER
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=NUM_TURNS_LEFT value=1
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Daroud tag=NUM_CARDS_DRAWN_THIS_TURN value=4
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=TIMEOUT value=75
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=PLAYSTATE value=PLAYING
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=CURRENT_PLAYER value=1
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=FIRST_PLAYER value=1
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=HERO_ENTITY value=4
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=MAXHANDSIZE value=10
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=STARTHANDSIZE value=4
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=PLAYER_ID value=1
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=TEAM_ID value=1
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=ZONE value=PLAY
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=CONTROLLER value=1
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=ENTITY_ID value=2
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=MAXRESOURCES value=10
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=CARDTYPE value=PLAYER
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=NUM_TURNS_LEFT value=1
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=Protectator tag=NUM_CARDS_DRAWN_THIS_TURN value=3
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=GameEntity tag=10 value=85
+D 22:39:31.1718953 GameState.DebugPrintPower() - TAG_CHANGE Entity=GameEntity tag=TURN value=1
+D 22:39:31.1728955 GameState.DebugPrintPower() - TAG_CHANGE Entity=GameEntity tag=ZONE value=PLAY
+D 22:39:31.1728955 GameState.DebugPrintPower() - TAG_CHANGE Entity=GameEntity tag=ENTITY_ID value=1
+`;
+
         public static run() {
             QUnit.module("Parser : Assignations");
             QUnit.test("Mono values only", function(assert) {
@@ -207,7 +243,7 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=REVEALED value=0
             QUnit.test("Parsing GameEntity", function(assert) {
                 var tests: Array<TestCase> = new Array<TestCase>();
                 
-                // Parsing string : ReplayParserTest.fileStart
+                // Parsing string : ReplayParserTest.createGameString
                 var parser = new HearthPlays.ReplayParser();
                 var input = ReplayParserTest.createGameString;
                 var createGame = <HearthPlays.CreateGame>parser.parse(input).getTimeline()[0];
@@ -313,10 +349,10 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=REVEALED value=0
 
 
             QUnit.module("Parser : FULL_ENTITY");
-            QUnit.test("Parsing GameEntity", function(assert) {
+            QUnit.test("Parsing three FULL_ENTITY", function(assert) {
                 var tests: Array<TestCase> = new Array<TestCase>();
                 
-                // Parsing string : ReplayParserTest.fileStart
+                // Parsing string : ReplayParserTest.fullEntityString
                 var parser = new HearthPlays.ReplayParser();
                 var input = ReplayParserTest.fullEntityString;
                 
@@ -397,6 +433,83 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=REVEALED value=0
                     var message = test.message + test.expected;
                     assert.deepEqual(result, test.expected, message);
                 }
+            });
+            
+            QUnit.module("Parser : TAG_CHANGE");
+            QUnit.test("Parsing some TAG_CHANGE", function(assert) {
+                var tests: Array<TestCase> = new Array<TestCase>();
+                
+                // Parsing string : ReplayParserTest.tagChangeString
+                var parser = new HearthPlays.ReplayParser();
+                var input = ReplayParserTest.tagChangeString;
+                
+                // First Entity
+                var tags = parser.parse(input).getTimeline();
+                var tests: Array<TestCase> = new Array<TestCase>();
+                tests.push(
+                    new TestCase(
+                        tags,
+                        "Daroud",
+                        "In first TAG_CHANGE, entity is ",
+                        (param) => {var fnu = <HearthPlays.TagChange>(param[0]);
+                            return fnu.entity;}
+                    ),
+                    new TestCase(
+                        tags,
+                        "TIMEOUT",
+                        "In first TAG_CHANGE, tag is ",
+                        (param) => <HearthPlays.TagChange>(param[0]).tag
+                    ),
+                    new TestCase(
+                        tags,
+                        75,
+                        "In first TAG_CHANGE, value is ",
+                        (param) => <HearthPlays.TagChange>(param[0]).value
+                    ),
+                    new TestCase(
+                        tags,
+                        "Daroud",
+                        "In second TAG_CHANGE, entity is ",
+                        (param) => <HearthPlays.TagChange>(param[1]).entity
+                    ),
+                    new TestCase(
+                        tags,
+                        "PLAYSTATE",
+                        "In second TAG_CHANGE, tag is ",
+                        (param) => <HearthPlays.TagChange>(param[1]).tag
+                    ),
+                    new TestCase(
+                        tags,
+                        "PLAYING",
+                        "In second TAG_CHANGE, value is ",
+                        (param) => <HearthPlays.TagChange>(param[1]).value
+                    ),
+                    new TestCase(
+                        tags,
+                        "GameEntity",
+                        "In thirty-first's TAG_CHANGE, entity is ",
+                        (param) => <HearthPlays.TagChange>(param[30]).entity
+                    ),
+                    new TestCase(
+                        tags,
+                        10,
+                        "In thirty-first's TAG_CHANGE, tag is ",
+                        (param) => <HearthPlays.TagChange>(param[30]).tag
+                    ),
+                    new TestCase(
+                        tags,
+                        85,
+                        "In thirty-first's TAG_CHANGE, value is ",
+                        (param) => <HearthPlays.TagChange>(param[30]).value
+                    )
+                );
+                for (var idx in tests) {
+                    var test = tests[idx];
+                    var result = test.callback(tags);
+                    var message = test.message + test.expected;
+                    assert.deepEqual(result, test.expected, message);
+                }
+                
             });
 
         }

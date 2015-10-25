@@ -24,6 +24,11 @@
 
 namespace HearthPlays {
 	export class TagChange implements ReplayEvent {
+        
+        public entity: Object;
+        public tag: string;
+        public value: number|string;
+        
         constructor() {
             // TODO
         }
