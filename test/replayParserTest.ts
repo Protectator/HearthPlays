@@ -94,6 +94,13 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=FACTION value=ALLIANCE
 D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=CARDTYPE value=MINION
 D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=RARITY value=RARE
 D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ZONE_POSITION value=3
+D 22:39:31.1138745 GameState.DebugPrintPower() - FULL_ENTITY - Creating ID=7 CardID=
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ZONE value=DECK
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=CONTROLLER value=1
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ENTITY_ID value=7
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ZONE_POSITION value=0
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=CANT_PLAY value=0
+D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=REVEALED value=0
 `;
 
         public static run() {
@@ -312,7 +319,10 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ZONE_POSITION value=3
                 // Parsing string : ReplayParserTest.fileStart
                 var parser = new HearthPlays.ReplayParser();
                 var input = ReplayParserTest.fullEntityString;
+                
+                // First Entity
                 var fullEntity = <HearthPlays.FullEntity>parser.parse(input).getTimeline()[0];
+                var tests: Array<TestCase> = new Array<TestCase>();
                 tests.push(
                     new TestCase(
                         fullEntity,
@@ -343,6 +353,42 @@ D 22:39:31.1138745 GameState.DebugPrintPower() -     tag=ZONE_POSITION value=3
                         4,
                         "In first FULL_ENTITY, entity's tag \"CREATOR\" is ",
                         (param) => (<HearthPlays.FullEntity>param).entity.getTag("CREATOR")
+                    )
+                );
+                for (var idx in tests) {
+                    var test = tests[idx];
+                    var result = test.callback(fullEntity);
+                    var message = test.message + test.expected;
+                    assert.deepEqual(result, test.expected, message);
+                }
+                
+                // Third Entity
+                var fullEntity = <HearthPlays.FullEntity>parser.parse(input).getTimeline()[2];
+                var tests: Array<TestCase> = new Array<TestCase>();
+                tests.push(
+                    new TestCase(
+                        fullEntity,
+                        7,
+                        "In third FULL_ENTITY, ID is ",
+                        (param) => (<HearthPlays.FullEntity>param).id
+                    ),
+                    new TestCase(
+                        fullEntity,
+                        undefined,
+                        "In third FULL_ENTITY, CardID is ",
+                        (param) => (<HearthPlays.FullEntity>param).cardId
+                    ),
+                    new TestCase(
+                        fullEntity,
+                        "DECK",
+                        "In third FULL_ENTITY, entity's tag \"ZONE\" is ",
+                        (param) => (<HearthPlays.FullEntity>param).entity.getTag("ZONE")
+                    ),
+                    new TestCase(
+                        fullEntity,
+                        0,
+                        "In third FULL_ENTITY, entity's tag \"REVEALED\" is ",
+                        (param) => (<HearthPlays.FullEntity>param).entity.getTag("REVEALED")
                     )
                 );
                 for (var idx in tests) {
