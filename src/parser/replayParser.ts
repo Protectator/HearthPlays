@@ -139,9 +139,7 @@ namespace HearthPlays {
                     break;
 
                 case LogLineMethod.DEBUG_PRINT_POWER_LIST:
-                    // TODO : Implement correctly
-                    //this.parsePrintPowerList();
-                    this.nextLine();
+                    this.parsePrintPowerList();
                     break;
 
                 case LogLineMethod.DEBUG_PRINT_CHOICES:
@@ -186,6 +184,9 @@ namespace HearthPlays {
             this.currentLineNumber++;
             if (this.currentLineNumber >= this.lines.length) {
                 this.currentLineNumber = this.lines.length;
+            }
+            if (this.expectedPP != undefined && this.currentLine.method == LogLineMethod.DEBUG_PRINT_POWER && this.currentLine.type != LogLineType.meta) {
+                this.expectedPP--;
             }
             return this.currentLine;
         }
@@ -452,6 +453,9 @@ namespace HearthPlays {
         }
 
         private parsePrintPowerList(): void {
+            if (this.expectedPP != undefined && this.expectedPP != 0) {
+                throw new Error("Misplaced DebugPrintPowerList()");
+            }
             if (this.currentLine.type == LogLineType.meta) {
                 this.expectedPP = parseInt(this.currentLine.print.split("Count=")[1]);
             } else {
