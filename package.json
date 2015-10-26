@@ -8,9 +8,14 @@
     "node": ">= 0.10.0"
   },
   "devDependencies": {
+    "bootstrap": "^3.3.5",
     "gulp": "^3.9.0",
     "gulp-qunit": "^1.2.1",
-    "gulp-typescript": "^2.9.0"
+    "gulp-typescript": "^2.9.0",
+    "jszip": "git+https://github.com/Stuk/jszip.git#bcfe0352bfd0d3c93251b68eaebe77109e34a25f",
+    "pixi.js": "^3.0.8",
+    "qunitjs": "^1.19.0",
+    "typescript": "^1.6.2"
   },
   "repository": {
     "type": "git",
