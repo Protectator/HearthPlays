@@ -8,9 +8,14 @@
     "node": ">= 0.10.0"
   },
   "devDependencies": {
+    "bootstrap": "^3.3.5",
     "gulp": "^3.9.0",
     "gulp-qunit": "^1.2.1",
-    "gulp-typescript": "^2.9.0"
+    "gulp-typescript": "^2.9.0",
+    "jszip": "^2.5.0",
+    "pixi.js": "^3.0.8",
+    "requirejs": "^2.1.20",
+    "typescript": "^1.6.2"
   },
   "repository": {
     "type": "git",
