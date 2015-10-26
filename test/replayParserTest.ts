@@ -20,7 +20,7 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
-///<reference path="lib/qunit"/>
+///<reference path="../tsd/qunit"/>
 ///<reference path="../src/replay"/>
 ///<reference path="../src/parser/replayParser"/>
 ///<reference path="../src/events/createGame"/>
