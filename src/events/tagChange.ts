@@ -30,7 +30,6 @@ namespace HearthPlays {
         public value: number|string;
         
         constructor() {
-            // TODO
         }
     }
 }

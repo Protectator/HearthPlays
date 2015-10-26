@@ -75,9 +75,13 @@ namespace HearthPlays {
             }
             this.currentLineNumber = -1;
             this.nextLine();
+            var currentEvent: ReplayEvent;
             try {
                 while (this.currentLineNumber < this.lines.length) {
-                    this.parseFirstLevelLine();
+                    currentEvent = this.parseFirstLevelLine();
+                    if (currentEvent != undefined) {
+                        this.progressingReplay.addEvent(currentEvent);
+                    }
                 }
             } catch (e) {
                 if (e instanceof RangeError) {
@@ -93,16 +97,16 @@ namespace HearthPlays {
         /**
          * Parses a first-level event line and goes to the next.
          */
-        private parseFirstLevelLine(): void {
+        private parseFirstLevelLine(): ReplayEvent {
             var line = this.currentLine;
             switch (line.method) {
                 case LogLineMethod.DEBUG_PRINT_POWER:
                     switch (line.type) {
                         case LogLineType.CREATE_GAME:
-                            this.progressingReplay.addEvent(this.parseCreateGame());
+                            return this.parseCreateGame();
                             break;
                         case LogLineType.FULL_ENTITY:
-                            this.progressingReplay.addEvent(this.parseFullEntity());
+                            return this.parseFullEntity();
                             break;
                         case LogLineType.ACTION_START:
                             // TODO : Implement correctly
@@ -113,7 +117,7 @@ namespace HearthPlays {
                             throw new Error("Misplaced ACTION_END");
                             break;
                         case LogLineType.TAG_CHANGE:
-                            this.progressingReplay.addEvent(this.parseTagChange());
+                            return this.parseTagChange();
                             break;
                         case LogLineType.SHOW_ENTITY:
                             // TODO : Implement correctly
@@ -344,6 +348,58 @@ namespace HearthPlays {
             return event;
         }
         
+        //////////////////
+        ////// Event /////
+        // ACTION_START //
+        //////////////////
+        //////////////////
+        
+        private parseAction(): Action {
+            // Creating the event we'll return
+            var event = new Action();
+
+            // Getting the assignation in this line
+            var assignations = ReplayParser.readAssignations(this.currentLine.print);
+            for (var assignationKey in assignations) {
+                var assignationValue = assignations[assignationKey];
+                switch (assignationKey) {
+                    case "Entity":
+                        event.entity = assignationValue;
+                        break;
+                    case "BlockType":
+                        event.blockType = assignationValue;
+                        break;
+                    case "Index":
+                        event.index = assignationValue;
+                        break;
+                    case "Target":
+                        event.target = assignationValue;
+                        break;
+                    default:
+                        console.log("Unrecognized assignation in ACTION_START : " + assignationKey);
+                }
+            }
+
+            this.nextLine();
+            
+            // Getting all meta events
+            var currentEvent: ReplayEvent;
+            // TODO : There is *ONE* ACTION_START that does not end by an ACTION_END.
+            // This needs to be handled correctly.
+            while (this.currentLine.type != LogLineType.ACTION_END) {
+                currentEvent = this.parseFirstLevelLine();
+                if (currentEvent != undefined) {
+                    event.events.push(currentEvent);
+                }
+                this.nextLine();
+            }
+
+
+            this.nextLine();
+
+            return event;
+        }
+        
         /////////////
         // UTILITY //
         /////////////
@@ -434,12 +490,6 @@ namespace HearthPlays {
                 entity.setTag(tagKey, tagValue);
                 this.nextLine();
             }
-        }
-
-        private parseAction(): void {
-
-            var event = new Action();
-            // TODO
         }
 
         private parseShowEntity(): void {

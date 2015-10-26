@@ -23,9 +23,16 @@
 ///<reference path="../replayEvent.ts"/>
 
 namespace HearthPlays {
-	export class Action implements ReplayEvent {
+    export class Action implements ReplayEvent {
+
+        public entity: Object;
+        public blockType: string | number;
+        public index: string | number;
+        public target: string | number;
+        public events: ReplayEvent[];
+
         constructor() {
-            // TODO
+            this.events = new Array<ReplayEvent>();
         }
     }
 }
