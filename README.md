@@ -3,14 +3,16 @@
 HearthPlays is a website that allows you to watch replays of Hearthstone games.
 
 ## Installing
-* Install [npm](https://www.npmjs.com)
-* In HearthPlays root directory, run `npm install`. This will install all the required dependencies.
+* Install [npm](https://www.npmjs.com).
+* In HearthPlays' directory, run
+```npm install```.
 
 ## Building
 To build the app and tests, run `gulp build` in the project's root directory.
 
 ## Testing
-You can run the tests in two ways :
+After building the app, you can run the tests in two ways :
+
 1. Run the tests in your browser : Simply open the file `test/test.html` in your browser.
 2. Run the tests in a command-line interface : Run `gulp test` in the project's root directory.
 
