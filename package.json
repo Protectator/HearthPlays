@@ -4,6 +4,10 @@
   "private": true,
   "description": "HearthPlays is a website that allows you to watch replays of Hearthstone games.",
   "author": "Kewin Dousse (Protectator) <me@protectator.ch>",
+  "scripts": {
+    "build": "gulp build",
+    "test": "gulp test"
+  },
   "engines": {
     "node": ">= 0.10.0"
   },
