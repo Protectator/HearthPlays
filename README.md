@@ -1,4 +1,4 @@
-# HearthPlays [![Build Status](https://magnum.travis-ci.com/Protectator/HearthPlays.svg?token=sQpTnAk4qPzgpu27YfLd&branch=master)](https://magnum.travis-ci.com/Protectator/HearthPlays) [![Join the chat at https://gitter.im/Protectator/HearthPlays](https://img.shields.io/badge/GITTER-JOIN_CHAT_%E2%86%92-1dce73.svg)](https://gitter.im/Protectator/HearthPlays?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# HearthPlays [![Build Status](https://magnum.travis-ci.com/Protectator/HearthPlays.svg?token=sQpTnAk4qPzgpu27YfLd&branch=master)](https://magnum.travis-ci.com/Protectator/HearthPlays) [![Join the chat at https://gitter.im/Protectator/HearthPlays](https://img.shields.io/badge/gitter-join%20chat-1dce73.svg)](https://gitter.im/Protectator/HearthPlays?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 HearthPlays is a website that allows you to watch replays of Hearthstone games.
 
