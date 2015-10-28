@@ -19,5 +19,8 @@ After building the app, you can run the tests in two ways :
 ## Usage
 To use it, simply open `static/index.html` in your browser (after having the project built).
 
+## Troubleshooting
+See the [Wiki](https://github.com/Protectator/HearthPlays/wiki/Troubleshooting).
+
 ## License
 HearthPlays is distributed under [GNU Affero GPL License](http://www.gnu.org/licenses/agpl-3.0.en.html).
