@@ -25,6 +25,7 @@
 ///<reference path="../src/parser/replayParser"/>
 ///<reference path="../src/events/createGame"/>
 ///<reference path="../src/parser/logLine"/>
+///<reference path="../src/parser/logSource"/>
 
 namespace HearthPlaysTest {
     export class ReplayParserTest {
@@ -244,7 +245,7 @@ D 22:39:31.1728955 GameState.DebugPrintPower() - TAG_CHANGE Entity=GameEntity ta
                 var tests: Array<TestCase> = new Array<TestCase>();
                 
                 // Parsing string : ReplayParserTest.createGameString
-                var parser = new HearthPlays.ReplayParser();
+                var parser = new HearthPlays.ReplayParser(HearthPlays.LogSource.HDTREPLAY);
                 var input = ReplayParserTest.createGameString;
                 var createGame = <HearthPlays.CreateGame>parser.parse(input).getTimeline()[0];
                 tests.push(
@@ -353,7 +354,7 @@ D 22:39:31.1728955 GameState.DebugPrintPower() - TAG_CHANGE Entity=GameEntity ta
                 var tests: Array<TestCase> = new Array<TestCase>();
                 
                 // Parsing string : ReplayParserTest.fullEntityString
-                var parser = new HearthPlays.ReplayParser();
+                var parser = new HearthPlays.ReplayParser(HearthPlays.LogSource.HDTREPLAY);
                 var input = ReplayParserTest.fullEntityString;
                 
                 // First Entity
@@ -440,7 +441,7 @@ D 22:39:31.1728955 GameState.DebugPrintPower() - TAG_CHANGE Entity=GameEntity ta
                 var tests: Array<TestCase> = new Array<TestCase>();
                 
                 // Parsing string : ReplayParserTest.tagChangeString
-                var parser = new HearthPlays.ReplayParser();
+                var parser = new HearthPlays.ReplayParser(HearthPlays.LogSource.HDTREPLAY);
                 var input = ReplayParserTest.tagChangeString;
                 
                 // First Entity

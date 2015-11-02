@@ -24,6 +24,7 @@
 ///<reference path="logLine.ts"/>
 ///<reference path="logLineType.ts"/>
 ///<reference path="logLineMethod.ts"/>
+///<reference path="logSource.ts"/>
 ///<reference path="../entities/tags.ts"/>
 ///<reference path="../replayEvent.ts"/>
 ///<reference path="../events/createGame.ts"/>
@@ -42,6 +43,7 @@ namespace HearthPlays {
         private events: ReplayEvent[];
         // Parser state
         private currentLineNumber: number;
+        private sourceType: LogSource;
         // Parser's current replay
         private progressingReplay: Replay;
         // Gets the current line to be parsed
@@ -59,6 +61,14 @@ namespace HearthPlays {
         // GENERIC //
         //         //
         /////////////
+        
+        /**
+         * Creates a parser designed to read a certain type of input.
+         * @param sourceFile Source type from which the logs are taken
+         */
+        constructor(source: LogSource) {
+            this.sourceType = source;
+        }
 
         /**
          * Creates a Replay object from a complete game's logs.

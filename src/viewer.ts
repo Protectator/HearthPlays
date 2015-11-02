@@ -23,6 +23,7 @@
 ///<reference path="../tsd/pixi.js.d.ts"/>
 ///<reference path="../tsd/jszip.d.ts"/>
 ///<reference path="parser/replayParser.ts"/>
+///<reference path="parser/logSource.ts"/>
 ///<reference path="replay.ts"/>
 
 // For Typescript to stop complaining about "moz" and "ms" not existing
@@ -120,14 +121,10 @@ namespace HearthPlays {
 
         public loadFromFileInput(event): void {
             var file: File = event.target.files[0];
+            var name = file.name;
+            var extension = name.substring(name.lastIndexOf("."));
             var reader: FileReader = new FileReader();
             var _this = this;
-
-            reader.onload = (function(theFile) {
-                return function(e) {
-                    _this.loadReplay(e.target.result);
-                }
-            })(file);
 
             reader.onprogress = function(data) {
                 if (data.lengthComputable) {
@@ -136,14 +133,41 @@ namespace HearthPlays {
                 }
             }
 
-            reader.readAsArrayBuffer(file);
+            switch (extension) {
+                case ".hdtreplay":
+                    reader.onload = (function(theFile) {
+                        return function(e) {
+                            _this.loadHdtReplay(e.target.result);
+                        }
+                    })(file);
+                    reader.readAsArrayBuffer(file);
+                    break;
+                    
+                case ".log":
+                    reader.onload = (function(theFile) {
+                        return function(e) {
+                            _this.loadOfficialReplay(e.target.result);
+                        }
+                    })(file);
+                    reader.readAsText(file);
+                    break;
+                    
+                default:
+                    throw new Error("Unrecognized file format.");
+                    return;
+            }
         }
 
-        private loadReplay(rawData: ArrayBuffer): void {
+        private loadHdtReplay(rawData: ArrayBuffer): void {
             var zip: JSZip = new JSZip(rawData);
             var logs: string = zip.file("output_log.txt").asText();
-            var parser = new ReplayParser();
+            var parser = new ReplayParser(LogSource.HDTREPLAY);
             this.loadedReplay = parser.parse(logs);
+        }
+
+        private loadOfficialReplay(rawData: string): void {
+            var parser = new ReplayParser(LogSource.OFFICIAL_LOGS);
+            this.loadedReplay = parser.parse(rawData);
         }
 
         private isFullscreenEnabled(): boolean {
