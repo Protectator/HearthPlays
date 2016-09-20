@@ -157,10 +157,10 @@ namespace HearthPlays {
         }
 
         //
-        private async loadHdtReplay(rawData: ArrayBuffer): void {
+        private loadHdtReplay(rawData: ArrayBuffer): void {
             var zip: JSZip = new JSZip();
             var viewer = this;
-            await zip.file("output_log.txt").async("string")
+            zip.file("output_log.txt").async("string")
                 .then(function (content) {
                     var parser = new ReplayParser(LogSource.HDTREPLAY);
                     viewer.loadedReplay = parser.parse(content);

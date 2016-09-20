@@ -448,8 +448,8 @@ namespace HearthPlays {
                         result[arrayName][arrayIndex] != null &&
                         result[arrayName][arrayIndex].constructor == Object) {
                         // Add the assignations instead of erasing the old object
-                        for (var key in resultValue) {
-                            result[arrayName][arrayIndex][key] = resultValue[key];
+                        for (var resultKey in resultValue) {
+                            result[arrayName][arrayIndex][resultKey] = resultValue[resultKey];
                         }
                     } else {
                         // If no entry, simply assign the object
