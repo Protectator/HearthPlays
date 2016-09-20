@@ -153,7 +153,6 @@ namespace HearthPlays {
                     
                 default:
                     throw new Error("Unrecognized file format.");
-                    return;
             }
         }
 

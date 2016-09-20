@@ -114,10 +114,8 @@ namespace HearthPlays {
                     switch (line.type) {
                         case LogLineType.CREATE_GAME:
                             return this.parseCreateGame();
-                            break;
                         case LogLineType.FULL_ENTITY:
                             return this.parseFullEntity();
-                            break;
                         case LogLineType.ACTION_START:
                             // TODO : Implement correctly
                             //this.parseAction();
@@ -125,10 +123,8 @@ namespace HearthPlays {
                             break;
                         case LogLineType.ACTION_END:
                             throw new Error("Misplaced ACTION_END");
-                            break;
                         case LogLineType.TAG_CHANGE:
                             return this.parseTagChange();
-                            break;
                         case LogLineType.SHOW_ENTITY:
                             // TODO : Implement correctly
                             //this.parseShowEntity();
@@ -141,10 +137,8 @@ namespace HearthPlays {
                             break;
                         case LogLineType.META_DATA:
                             throw new Error("Misplaced META_DATA");
-                            break;
                         case LogLineType.meta:
                             throw new Error("Misplaced meta information");
-                            break;
                         default:
                             throw new Error("Unrecognized event");
                     }
@@ -181,7 +175,6 @@ namespace HearthPlays {
                 case LogLineMethod.lastLine:
                     this.nextLine();
                     return;
-                    break;
 
                 default:
                     throw new Error("Unknown method name");
@@ -435,7 +428,7 @@ namespace HearthPlays {
                     var replaceArrayValueFunct = function(a, b, c): string {
                         resultValue[b] = ReplayParser.tryParseInt(c);
                         return a;
-                    }
+                    };
                     value.replace(readArrayInValue, replaceArrayValueFunct);
                 } else { // If no, simply parse the value
                     resultValue = ReplayParser.tryParseInt(value);
