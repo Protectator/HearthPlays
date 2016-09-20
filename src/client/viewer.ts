@@ -20,8 +20,7 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
-///<reference path="../tsd/pixi.js.d.ts"/>
-///<reference path="../tsd/jszip.d.ts"/>
+///<reference path="../../typings/index.d.ts"/>
 ///<reference path="parser/replayParser.ts"/>
 ///<reference path="parser/logSource.ts"/>
 ///<reference path="replay.ts"/>
@@ -70,7 +69,7 @@ namespace HearthPlays {
             // Create renderer and append it
             this.currentRenderer = PIXI.autoDetectRenderer(this.length, this.height);
             document.getElementById("viewer-container").appendChild(this.currentRenderer.view);
-            this.rendererView = document.getElementById("viewer-container").getElementsByTagName("canvas")[0];
+            this.rendererView = <HTMLCanvasElement>(document.getElementById("viewer-container").getElementsByTagName("canvas")[0]);
             document.getElementById("viewer-container").className = "active";
             
             // Firstly, scale the renderer
@@ -131,7 +130,7 @@ namespace HearthPlays {
                     var progress = parseInt(((data.loaded / data.total) * 100) + "", 10);
                     console.log("Loading file progress : " + progress + "%");
                 }
-            }
+            };
 
             switch (extension) {
                 case ".hdtreplay":
@@ -158,11 +157,15 @@ namespace HearthPlays {
             }
         }
 
-        private loadHdtReplay(rawData: ArrayBuffer): void {
-            var zip: JSZip = new JSZip(rawData);
-            var logs: string = zip.file("output_log.txt").asText();
-            var parser = new ReplayParser(LogSource.HDTREPLAY);
-            this.loadedReplay = parser.parse(logs);
+        //
+        private async loadHdtReplay(rawData: ArrayBuffer): void {
+            var zip: JSZip = new JSZip();
+            var viewer = this;
+            await zip.file("output_log.txt").async("string")
+                .then(function (content) {
+                    var parser = new ReplayParser(LogSource.HDTREPLAY);
+                    viewer.loadedReplay = parser.parse(content);
+                });
         }
 
         private loadOfficialReplay(rawData: string): void {

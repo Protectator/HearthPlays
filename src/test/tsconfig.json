@@ -3,9 +3,9 @@
 		"target" : "ES5",
 		"module" : "commonjs",
 		"removeComments": false,
-		"out" : "../out/app.js"
+		"out" : "../../out/tests.js"
 	},
 	"files": [
-		"app.ts"
+      "test.ts"
 	]
 }

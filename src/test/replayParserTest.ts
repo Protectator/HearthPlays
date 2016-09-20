@@ -20,12 +20,12 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
-///<reference path="../tsd/qunit"/>
-///<reference path="../src/replay"/>
-///<reference path="../src/parser/replayParser"/>
-///<reference path="../src/events/createGame"/>
-///<reference path="../src/parser/logLine"/>
-///<reference path="../src/parser/logSource"/>
+///<reference path="../../typings/index.d.ts"/>
+///<reference path="../client/replay"/>
+///<reference path="../client/parser/replayParser"/>
+///<reference path="../client/events/createGame"/>
+///<reference path="../client/parser/logLine"/>
+///<reference path="../client/parser/logSource"/>
 
 namespace HearthPlaysTest {
     export class ReplayParserTest {

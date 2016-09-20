@@ -2,8 +2,8 @@ var gulp = require('gulp');
 var ts = require('gulp-typescript');
 var qunit = require('gulp-qunit');
 
-var app = ts.createProject('src/tsconfig.json');
-var test = ts.createProject('test/tsconfig.json');
+var app = ts.createProject('src/client/tsconfig.json');
+var test = ts.createProject('src/test/tsconfig.json');
 
 gulp.task('default', ['build']);
 
@@ -24,5 +24,5 @@ gulp.task('buildTest', function() {
 });
 
 gulp.task('testPhantom', function() {
-  return gulp.src('./test/test.html').pipe(qunit());
+  return gulp.src('./src/test/test.html').pipe(qunit());
 });

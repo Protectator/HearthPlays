@@ -20,7 +20,7 @@
     Project's repository : https://github.com/Protectator/HearthPlays
 */
 
-///<reference path="../tsd/qunit"/>
+///<reference path="../../typings/index.d.ts"/>
 ///<reference path="replayParserTest"/>
 
 HearthPlaysTest.ReplayParserTest.run();

@@ -1,0 +1,9 @@
+{
+  "globalDependencies": {
+    "github-electron": "registry:dt/github-electron#1.3.6+20160919065650",
+    "jszip": "registry:dt/jszip#0.0.0+20160709055933",
+    "node": "registry:dt/node#6.0.0+20160919063032",
+    "pixi.js": "registry:dt/pixi.js#3.0.9+20160825215559",
+    "qunit": "registry:dt/qunit#1.16.0+20160514172809"
+  }
+}
