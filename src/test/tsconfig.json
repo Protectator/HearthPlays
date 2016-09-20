@@ -3,7 +3,7 @@
 		"target" : "ES5",
 		"module" : "commonjs",
 		"removeComments": false,
-		"out" : "../../out/tests.js"
+		"out" : "../out/tests.js"
 	},
 	"files": [
       "test.ts"
