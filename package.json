@@ -5,7 +5,8 @@
   "description": "HearthPlays is a website that allows you to watch replays of Hearthstone games.",
   "author": "Kewin Dousse (Protectator) <me@protectator.ch>",
   "scripts": {
-    "build": "typings install && gulp build",
+    "postinstall": "typings install",
+    "build": "gulp build",
     "test": "gulp test"
   },
   "engines": {
