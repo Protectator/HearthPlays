@@ -32,7 +32,7 @@ let Menu = electron.Menu;
 let mainWindow: Electron.BrowserWindow;
 
 function createWindow(): void {
-    mainWindow = new BrowserWindow({width: 800, height: 600, title: 'HearthPlays',});
+    mainWindow = new BrowserWindow({width: 800, height: 600, title: 'HearthPlays'});
     mainWindow.loadURL(`file://${__dirname}/src/static/index.html`);
     mainWindow.on("closed", () => {
         mainWindow = null;

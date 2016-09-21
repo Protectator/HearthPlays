@@ -1,6 +1,9 @@
 var gulp = require('gulp');
 var ts = require('gulp-typescript');
 var qunit = require('gulp-qunit');
+var electron = require('electron-connect').server.create({
+    stopOnClose: true
+});
 
 var app = ts.createProject('src/client/tsconfig.json');
 var test = ts.createProject('src/test/tsconfig.json');
@@ -19,21 +22,21 @@ gulp.task('buildMain', function() {
 });
 
 gulp.task('buildApp', function() {
-  var tsResult = app.src()
-    .pipe(ts(app));
-  return tsResult.js.pipe(gulp.dest('out'));
+    var tsResult = app.src()
+        .pipe(ts(app));
+    return tsResult.js.pipe(gulp.dest('out'));
 });
 
 gulp.task('buildTest', function() {
-  var tsResult = test.src()
-    .pipe(ts(test));
-  return tsResult.js.pipe(gulp.dest('out'));
+    var tsResult = test.src()
+        .pipe(ts(test));
+    return tsResult.js.pipe(gulp.dest('out'));
 });
 
 gulp.task('testPhantom', function() {
-  return gulp.src('./src/test/test.html').pipe(qunit());
+    return gulp.src('./src/test/test.html').pipe(qunit());
 });
 
 gulp.task('start', function() {
-
+    electron.start();
 });

@@ -8,13 +8,14 @@
     "postinstall": "typings install",
     "build": "gulp build",
     "test": "gulp test",
-    "start": "electron main.js"
+    "start": "electron app.js"
   },
   "engines": {
     "node": ">= 0.10.0"
   },
   "devDependencies": {
     "bootstrap": "^3.3.5",
+    "electron-connect": "^0.6.0",
     "electron-prebuilt": "^1.4.0",
     "gulp": "^3.9.0",
     "gulp-qunit": "^1.5.0",

@@ -1,6 +1,6 @@
 # HearthPlays [![Build Status](https://magnum.travis-ci.com/Protectator/HearthPlays.svg?token=sQpTnAk4qPzgpu27YfLd&branch=master)](https://magnum.travis-ci.com/Protectator/HearthPlays) [![Join the chat at https://gitter.im/Protectator/HearthPlays](https://img.shields.io/badge/gitter-join%20chat-1dce73.svg)](https://gitter.im/Protectator/HearthPlays?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-HearthPlays is a website that allows you to watch replays of Hearthstone games.
+HearthPlays is a desktop app that allows you to watch replays of Hearthstone games.
 
 ## Installing
 * Install [npm](https://www.npmjs.com).
