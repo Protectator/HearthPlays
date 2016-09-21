@@ -17,7 +17,7 @@ After building the app, you can run the tests in two ways :
 2. Run the tests in a command-line interface : Run `npm test` in the project's root directory.
 
 ## Usage
-To use it, simply open `static/index.html` in your browser (after having the project built).
+Build the project, then run `npm run start`.
 
 ## Troubleshooting
 See the [Wiki](https://github.com/Protectator/HearthPlays/wiki/Troubleshooting).

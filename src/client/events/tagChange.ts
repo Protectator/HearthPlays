@@ -1,7 +1,7 @@
 /*	This file is part of HearthPlays.
 
-    HearthPlays - Web Hearthstone replays viewer
-    Copyright (C) 2015  Kewin Dousse (Protectator)
+    HearthPlays - Hearthstone replays viewer
+    Copyright (C) 2015-2016  Kewin Dousse (Protectator)
     
     HearthPlays is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as

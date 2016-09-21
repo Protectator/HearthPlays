@@ -19,37 +19,30 @@
  Contact : me@protectator.ch
  Project's repository : https://github.com/Protectator/HearthPlays
  */
-
+"use strict";
 ///<reference path="./typings/index.d.ts"/>
-
-import electron = require("electron");
-import BrowserWindowOptions = Electron.BrowserWindowOptions;
-let app = electron.app;
-let dialog = electron.dialog;
-let BrowserWindow = electron.BrowserWindow;
-let Menu = electron.Menu;
-
-let mainWindow: Electron.BrowserWindow;
-
-function createWindow(): void {
-    mainWindow = new BrowserWindow({width: 800, height: 600, title: 'HearthPlays',});
-    mainWindow.loadURL(`file://${__dirname}/src/static/index.html`);
-    mainWindow.on("closed", () => {
+var electron = require("electron");
+var app = electron.app;
+var dialog = electron.dialog;
+var BrowserWindow = electron.BrowserWindow;
+var Menu = electron.Menu;
+var mainWindow;
+function createWindow() {
+    mainWindow = new BrowserWindow({ width: 800, height: 600, title: 'HearthPlays', });
+    mainWindow.loadURL("file://" + __dirname + "/src/static/index.html");
+    mainWindow.on("closed", function () {
         mainWindow = null;
     });
 }
-
-app.on("ready", () => {
+app.on("ready", function () {
     createWindow();
 });
-
-app.on("window-all-closed", () => {
+app.on("window-all-closed", function () {
     if (process.platform !== "darwin") {
-        app.quit()
+        app.quit();
     }
 });
-
-app.on("activate", () => {
+app.on("activate", function () {
     if (mainWindow === null) {
         createWindow();
     }
