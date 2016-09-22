@@ -22,12 +22,11 @@
 
 ///<reference path="./typings/index.d.ts"/>
 
-import electron = require("electron");
+import electron = require('electron');
 import BrowserWindowOptions = Electron.BrowserWindowOptions;
+let clientWatcher = require('electron-connect').client;
 let app = electron.app;
-let dialog = electron.dialog;
 let BrowserWindow = electron.BrowserWindow;
-let Menu = electron.Menu;
 
 let mainWindow: Electron.BrowserWindow;
 
@@ -37,6 +36,7 @@ function createWindow(): void {
     let icon = electron.nativeImage.createFromPath(`${__dirname}/src/static/img/logo.png`);
     mainWindow = new BrowserWindow({width: 800, height: 600, title: 'HearthPlays', icon: icon});
     mainWindow.loadURL(`file://${__dirname}/src/static/index.html`);
+    clientWatcher.create(mainWindow);
     mainWindow.webContents.on("dom-ready", () => {
         mainConsole.timeEnd('createWindow to dom-ready');
     });

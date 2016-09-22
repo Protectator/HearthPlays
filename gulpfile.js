@@ -1,44 +1,101 @@
+//////////////
+// Required //
+//////////////
 var gulp = require('gulp');
 var ts = require('gulp-typescript');
 var qunit = require('gulp-qunit');
-var electron = require('electron-connect').server.create({
+var opn = require('opn');
+var electronc = require('electron-connect').server.create({
     stopOnClose: true
 });
 
-var app = ts.createProject('src/client/tsconfig.json');
-var test = ts.createProject('src/test/tsconfig.json');
-var main = ts.createProject('./tsconfig.json');
+////////////////
+// File paths //
+////////////////
+var src = {
+    client: './src/client/**/*',
+    electron: './src/electron/**/*',
+    static: './src/static/**/*',
+    test: './src/test/**/*',
+    launcher: './app.ts'
+};
+var out = {
+    client: './out/client.js',
+    electron: ['./app.js', './out/electron.js'],
+    test: './out/test.js'
+};
+var projects = {
+    client : ts.createProject('./src/client/tsconfig.json'),
+    electron : ts.createProject('./src/electron/tsconfig.json'),
+    test : ts.createProject('./src/test/tsconfig.json'),
+    launcher : ts.createProject('./tsconfig.json')
+};
 
-gulp.task('default', ['build']);
+///////////
+// Tasks //
+///////////
+gulp.task('default', ['serve']);
 
-gulp.task('build', ['buildMain', 'buildApp', 'buildTest']);
+gulp.task('build', ['build:launcher', 'build:electron', 'build:client', 'build:test']);
 
-gulp.task('test', ['build', 'testPhantom']);
+gulp.task('test', ['test:phantom']);
 
 gulp.task('start', ['serve']);
 
-gulp.task('buildMain', function() {
-    var tsResult = main.src()
-        .pipe(ts(main));
+// Builds
+gulp.task('build:launcher', function() {
+    var tsResult = projects.launcher.src()
+        .pipe(ts(projects.launcher));
     return tsResult.js.pipe(gulp.dest('.'));
 });
 
-gulp.task('buildApp', function() {
-    var tsResult = app.src()
-        .pipe(ts(app));
+gulp.task('build:electron', function() {
+    var tsResult = projects.electron.src()
+        .pipe(ts(projects.electron));
     return tsResult.js.pipe(gulp.dest('out'));
 });
 
-gulp.task('buildTest', function() {
-    var tsResult = test.src()
-        .pipe(ts(test));
+gulp.task('build:client', function() {
+    var tsResult = projects.client.src()
+        .pipe(ts(projects.client));
     return tsResult.js.pipe(gulp.dest('out'));
 });
 
-gulp.task('testPhantom', function() {
+gulp.task('build:test', function() {
+    var tsResult = projects.test.src()
+        .pipe(ts(projects.test));
+    return tsResult.js.pipe(gulp.dest('out'));
+});
+
+// Tests
+gulp.task('test:phantom', ['build'], function() {
     return gulp.src('./src/test/test.html').pipe(qunit());
 });
 
+gulp.task('test:browser', ['build'], function() {
+    return opn('./src/test/test.html');
+});
+
+// Run
 gulp.task('serve', ['build'], function() {
-    electron.start();
+    return electronc.start();
+});
+
+gulp.task('watch', ['serve'], function() {
+    // Recompile when sources change
+    gulp.watch([src.launcher], ['build:launcher']);
+    gulp.watch([src.electron], ['build:electron']);
+    gulp.watch([src.client], ['build:client']);
+
+    // Reload/Restart when necessary
+    gulp.watch([out.electron], ['electron:restart']);
+    gulp.watch([out.client, src.static], ['electron:reload']);
+});
+
+gulp.task('electron:reload', function() {
+    electronc.reload();
+});
+
+gulp.task('electron:restart', function() {
+    electronc.restart();
 });
