@@ -32,9 +32,14 @@ let Menu = electron.Menu;
 let mainWindow: Electron.BrowserWindow;
 
 function createWindow(): void {
+    let mainConsole = console;
+    mainConsole.time('createWindow to dom-ready');
     let icon = electron.nativeImage.createFromPath(`${__dirname}/src/static/img/logo.png`);
     mainWindow = new BrowserWindow({width: 800, height: 600, title: 'HearthPlays', icon: icon});
     mainWindow.loadURL(`file://${__dirname}/src/static/index.html`);
+    mainWindow.webContents.on("dom-ready", () => {
+        mainConsole.timeEnd('createWindow to dom-ready');
+    });
     mainWindow.on("closed", () => {
         mainWindow = null;
     });

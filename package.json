@@ -8,8 +8,9 @@
     "postinstall": "typings install",
     "build": "gulp build",
     "test": "gulp test",
-    "start": "electron app.js"
+    "start": "gulp start"
   },
+  "main": "./app.js",
   "engines": {
     "node": ">= 0.10.0"
   },
@@ -30,5 +31,8 @@
     "type": "git",
     "url": "git://github.com/protectator/HearthPlays.git",
     "private": true
+  },
+  "dependencies": {
+    "jquery": "^3.1.0"
   }
 }

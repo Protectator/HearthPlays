@@ -15,6 +15,8 @@ gulp.task('build', ['buildMain', 'buildApp', 'buildTest']);
 
 gulp.task('test', ['build', 'testPhantom']);
 
+gulp.task('start', ['serve']);
+
 gulp.task('buildMain', function() {
     var tsResult = main.src()
         .pipe(ts(main));
@@ -37,6 +39,6 @@ gulp.task('testPhantom', function() {
     return gulp.src('./src/test/test.html').pipe(qunit());
 });
 
-gulp.task('start', function() {
+gulp.task('serve', ['build'], function() {
     electron.start();
 });
